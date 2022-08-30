@@ -10,7 +10,7 @@ header:
   #    url: "/docs/quick-start-guide/"
 excerpt: >
   Collect, process, analyse and present data to support both everyday and strategic business decisions.<br />
-  To get started, visit the Posts & Projects tab.
+  <small>To get started, visit the Posts & Projects tab.</small>
 #  <small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.24.0">Latest release v4.24.0</a></small>
 feature_row:
   - image_path: /assets/images/carlos-muza-hpjSkU2UYSU-unsplash.jpeg
@@ -26,7 +26,7 @@ feature_row:
     #url: "/docs/layouts/"
     #btn_class: "btn--primary"
     #btn_label: "Learn more"
-  - image_path: /assets/images/andrea-de-santis-zwd435-ewb4-unsplash.jpeg
+  - image_path: /assets/images/ml.jpeg
     alt: "Machine Learning"
     title: "Machine Learning"
     excerpt: " "
