@@ -146,7 +146,7 @@ footer:
       # url:
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
-       url: "https://www.linkedin.com/in/ali-taimur-shabbir/"
+      url: "https://www.linkedin.com/in/ali-taimur-shabbir/"
     #- label: "GitHub"
     #  icon: "fab fa-fw fa-github"
       # url:
