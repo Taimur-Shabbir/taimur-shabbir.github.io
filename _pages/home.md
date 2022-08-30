@@ -4,35 +4,35 @@ permalink: /
 hidden: true
 header:
   overlay_color: "#5e616c"
-  overlay_image: /assets/images/gradienta-gwE9vXSi7Xw-unsplash.jpeg
+  overlay_image: /assets/images/jorg-angeli-CAMwIxYk5Xg-unsplash.jpeg
   #actions:
   #  - label: "<i class='fas fa-download'></i> Install now"
   #    url: "/docs/quick-start-guide/"
 excerpt: >
-  Site description goes here.<br />
+  Collect, process, analyse and present data to support both everyday and strategic business decisions.<br />
+  To get started, visit the Posts & Projects tab.
 #  <small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.24.0">Latest release v4.24.0</a></small>
 feature_row:
-  - image_path: /assets/images/mm-customizable-feature.png
-    alt: "customizable"
-    title: "Super customizable"
-    excerpt: "Everything from the menus, sidebars, comments, and more can be configured or set with YAML Front Matter."
-    url: "/docs/configuration/"
-    btn_class: "btn--primary"
-    btn_label: "Learn more"
-  - image_path: /assets/images/mm-responsive-feature.png
-    alt: "fully responsive"
-    title: "Responsive layouts"
-    excerpt: "Built with HTML5 + CSS3. All layouts are fully responsive with helpers to augment your content."
-    url: "/docs/layouts/"
-    btn_class: "btn--primary"
-    btn_label: "Learn more"
-  - image_path: /assets/images/mm-free-feature.png
-    alt: "100% free"
-    title: "100% free"
-    excerpt: "Free to use however you want under the MIT License. Clone it, fork it, customize it... whatever!"
-    url: "/docs/license/"
-    btn_class: "btn--primary"
-    btn_label: "Learn more"      
+  - image_path: /assets/images/carlos-muza-hpjSkU2UYSU-unsplash.jpeg
+    alt: "Analytics And Analysis"
+    title: "Analytics and Analysis"
+    excerpt: " "
+    #btn_class: "btn--primary"
+    #btn_label: "Learn more"
+  - image_path: /assets/images/Web-Analytics-Dashboard-datapine.png
+    alt: "Visualisation and Communication"
+    title: "Visualisation and Communication"
+    excerpt: " "
+    #url: "/docs/layouts/"
+    #btn_class: "btn--primary"
+    #btn_label: "Learn more"
+  - image_path: /assets/images/andrea-de-santis-zwd435-ewb4-unsplash.jpeg
+    alt: "Machine Learning"
+    title: "Machine Learning"
+    excerpt: " "
+    #url: "/docs/license/"
+    #btn_class: "btn--primary"
+    #btn_label: "Learn more"      
 ---
 
 {% include feature_row %}
