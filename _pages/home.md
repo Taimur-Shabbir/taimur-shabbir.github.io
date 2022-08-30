@@ -26,7 +26,7 @@ feature_row:
     #url: "/docs/layouts/"
     #btn_class: "btn--primary"
     #btn_label: "Learn more"
-  - image_path: /assets/images/ml.jpeg
+  - image_path: /assets/images/ml123.jpeg
     alt: "Machine Learning"
     title: "Machine Learning"
     excerpt: " "
