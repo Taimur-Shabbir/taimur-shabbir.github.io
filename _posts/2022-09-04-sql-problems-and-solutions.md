@@ -19,7 +19,7 @@ excerpt: "A live document where I showcase my solutions to Medium and Hard-ranke
 
 ## "Medium" Difficulty
 
-###[First Transaction](https://datalemur.com/questions/sql-first-transaction)
+### [First Transaction](https://datalemur.com/questions/sql-first-transaction)
 
 ``` sql
 
@@ -41,7 +41,7 @@ where t.rank = 1 and t.spend >= 50
 
 ### [Ad Campaign ROAS](https://datalemur.com/questions/ad-campaign-roas)
 
-``` SQL
+``` sql
 
 select
     advertiser_id, round(((sum(revenue)/sum(spend))::DECIMAL), 2) as ROAS
@@ -54,7 +54,7 @@ group by
 
 ### [Average Review Ratings](https://datalemur.com/questions/sql-avg-review-ratings)
 
-```SQL
+``` sql
 
 select
       extract(month from submit_date) as month,
@@ -71,7 +71,7 @@ order by
 
 ### [Top 5 Artists](https://datalemur.com/questions/top-fans-rank)
 
-``` SQL
+``` sql
 
 select t.artist_name, t.rank as artist_rank
 
@@ -96,7 +96,7 @@ order by t.rank
 
 ### [Consulting Bench Time](https://datalemur.com/questions/consulting-bench-time)
 
-```sql
+```  sql
 select
       s.employee_id,
       365 - sum(((c.end_date-c.start_date) + 1))
@@ -115,7 +115,7 @@ group by
 
 ### [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
 
-``` SQL
+``` sql
 
 with table1 as(select
       product_id,
