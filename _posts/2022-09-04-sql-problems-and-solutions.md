@@ -15,6 +15,8 @@ excerpt: "A live document where I showcase my solutions to Medium and Hard-ranke
 #mathjax: "true"
 ---
 
+**Note: To see the description for each problem, simply click on the problem name**
+
 # DataLemur
 
 ## "Medium" Difficulty
