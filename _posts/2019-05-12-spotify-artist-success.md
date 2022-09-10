@@ -14,7 +14,7 @@ excerpt: "Predicting Musician Success on Spotify to Inform Pre-emptive Signing D
 ---
 
 
-# 1. Problem motivation and understanding
+# 1) Problem motivation and understanding
 
 Over the last few years, the music industry has been dominated by digital streaming services, which produce vast amounts of data on listeners and their preferences. This has required major players in the industry to adopt a data driven approach to content delivery in order to stay competitive. Warner Music Group is looking to leverage its rich database to better understand the factors that have the most significant impact on the success of a new artist. This will allow them to optimise the allocation of resources when signing and promoting new artists.
 
@@ -22,11 +22,11 @@ For this case study, I used a Spotify dataset to predict the success of artists.
 
 The hypothesis is that if Warner Music Group can predict which artists would appear on certain playlists that greatly influence popularity, stream count and future success of an artist before they actually appear on such playlists, they would be in an advantageous competitive position by signing such artists before Warner Music Group's competitors do
 
-## Important
+**Important**
 
 This project uses 3 different data files. 2 of these are available in the repository. The last one ('cleaned_data.csv') is too large to be uploaded to Github, and can be found here instead: https://drive.google.com/open?id=1nW2UlZqLxN5dHhMPldJnoJ-C3rgXvfv1
 
-# 2. Approach and Insights
+## 1.1) Approach and Insights
 
 This project is framed as a supervised learning, classification task. The dependent variable is binary and showcases whether or not an artists appears on one or more key playlists. The independent variables and features include age of streamers, geography of streamers, source of streamers, stream count and so on
 
@@ -41,11 +41,11 @@ Additionally, class balance initially proved to be an issue, since there were ma
 A search for the best-performing model followed, followed by extensive evaluation. Decision Trees and Random Forests were found to be the best performing in terms of cross-validation scores. I choose the latter in tuning hyperparameters via grid search, and ended with a cross-validation score of 97%. Further attempts to using ensemble methods with my model (which by itself, of course, is an ensemble method) with AdaBoost yielded large decreases in performance, so such methods were not considered going forward
 
 
-# 3. Results
+## 1.2) Results
 
 Testing my model on the hold-out set resulted in an accuracy of 87%, which is good but not great, as it can still lead to WarnerMusic missing out on potentially successful artists. I believe the reason why the model cannot break the 90% barrier is the very small hold-out set size, with even fewer successful cases. My Confusion Matrix seems to confirm this. Oversampling was not executed on this hold-out set. Using ROC, the area under the curve is 78%, while the most important features are geographical (first principal component), number of unique streamers per artist and % of youth streamers. Thus, if an artist is popular among a multitude of young streamers, they are more likely to be successful.
 
-# 4. How to run this project
+## 1.3) How to run this project
 
 - Download the Jupyter notebook
 - Download the data files named cleaned_data.csv, newartists2015onwards.csv and playlists_ids_and_titles.csv\
@@ -53,9 +53,9 @@ Testing my model on the hold-out set resulted in an accuracy of 87%, which is go
 - Change paths to load the data from your local machine once you have downloaded the data files mentioned in point 2
 - Run the whole Jupyter Notebook
 
-# 5. Problem Exposition
+## 1.4) Problem Exposition
 
-### Streaming Music
+### 1.41) Streaming Music
 
 When artists release music digitally, details of how their music is streamed can be closely monitored.
 
@@ -74,7 +74,7 @@ Spotify uses it to drive their recommender systems – these tailor and individu
 
 Warner Music would like to use it to **better understand the factors that influence the future success of its artists**, **identify potentially successful acts** early on in their careers and use this analysis to make resource decisions about how they market and support their artists.
 
-### What are Spotify Playlists and why are relevant today?
+### 1.42) What are Spotify Playlists and why are relevant today?
 
 A playlist is a group of tracks that you can save under a name, listen to, and update at your leisure.
 
@@ -112,7 +112,7 @@ In other words, we want to find the artists most likely to make it to one of the
 
 In ML terms, this means creating a predicitve model to assess which artists will most likely end up on one of these playlists. The 4 target playlists are outlined in following sections
 
-### BUSINESS PROBLEM → DATA PROBLEM
+### 1.43) Business Problem → Data Problem
 
 Now that I have a better understanding of the business problem, I can begin to think about how we could model this problem using data.
 
@@ -122,7 +122,7 @@ Based on our business problem, one way in which I can do this is to create a bin
 
 My problem thus becomes a classification task, which can be modeled as follows:
 
-### *Artist Feature 1 + Artist Feature 2 …. + Artist Feature N = Probability of Success*
+**Artist Feature 1 + Artist Feature 2 …. + Artist Feature N = Probability of Success**
 
 where,
 
@@ -139,7 +139,7 @@ The key playlists I will use for this case study are the 4 listed below, as reco
 The project task is to take a look at the Spotify dataset to see how I might be able to set up this classification model.
 <br>
 
-## 1. Preparing the problem
+# 2. Preparing the problem
 
 
 ```python
@@ -169,7 +169,7 @@ import seaborn as sns
 
 
 
-## 2. Data Understanding
+## 2.1) Data Understanding
 
 <br>
 A year’s worth of Spotify streaming data in the WMG database amounts to approximately 50 billion rows of data i.e. 50 billion streams (1.5 to 2 terabytes worth), with a total of seven years of data stored altogether (2010 till today).
@@ -688,7 +688,7 @@ The columns I should focus on for this case study are:
 * Stream Source URI – where on Spotify was the song played – unique playlist ID, an artist’s page, an album etc.
 
 
-### EXPLORATORY ANALYSIS AND PLOTS
+## 2.2) Exploratory Analysis and Plots
 
 
 Now I will look at the data set in more detail.
@@ -982,7 +982,7 @@ This may point to the idea that number of streams per playlist, while an importa
 
 -- --
 
-## 3.	Data Preperation and Feature Engineering
+# 3.	Data Preperation and Feature Engineering
 <br>
 From our business understanding, I know that our criteria for success is whether or not an artist has been on one of 4 key playlists.  The column ‘stream_source_uri’, contains data about the source of the stream – whether it was from an artist’s page, an album, a playlist etc.
 
@@ -1430,7 +1430,7 @@ There are many approaches one might take to generate features. Based on the data
 3.	User-base features
 
 
-## Artist features
+## 3.1) Artist features
 
 *	Stream count
 *	Total Number of users
@@ -1666,7 +1666,7 @@ artist_df
 
 
 
-## Playlist Features
+## 3.2) Playlist Features
 
 Understanding **an artist’s growth as a function of his/her movement across different playlists** is potentially key to understanding how to identify and breakout new artists on Spotify.
 
@@ -1680,7 +1680,7 @@ One way to model the effect of playlists on an artist’s performance has been t
 
 <br>
 
-### *Artist Feature 1 + Artist Feature 2 …. + Artist Feature N = Probability of Success*
+**Artist Feature 1 + Artist Feature 2 …. + Artist Feature N = Probability of Success**
 
 <br>
 
@@ -2039,7 +2039,7 @@ masta1
 
 
 
-## User-base features
+## 3.3) User-base features
 
 I can use the age and gender columns to create an audience profile per artist.
 *	Gender Percentage Breakdown
@@ -4452,7 +4452,7 @@ print(ultimate_train_df['Successful Artist or Not'].value_counts())
 *Now we have a much better dataset in terms of its size and class balance. Of course, there is the possibility that by oversampling from the minority (successful) class, I may have increased the chances of overfitting. If this is the case, then my model will perform poorly. The following steps will yield the answer to this predicament*
 
 
-## 4.	Evaluate algorithms
+# 4)	Evaluate algorithms
 
 **Model Selection**
 
@@ -4740,7 +4740,7 @@ plt.show()
 
 
 
-## 5. Improve Results
+# 5) Improve Results
 
 
 <b>Hyper Parameter Tuning </b>
@@ -4904,9 +4904,9 @@ print("CV score: {:.4%}".format(cv_result_DT_Ada.mean()))
 
 
 
-## 6. Present Results
+# 6) Present Results
 
-### Confusion Matrix
+## 6.1) Confusion Matrix
 
 To get a better idea of the quality of our predictions, we can plot a confusion matrix and ROC curve.
 
@@ -4997,7 +4997,7 @@ plt.show()
 
 
 
-### ROC Curve
+## 6.2) ROC Curve
 
 Receiver Operating Characteristic (ROC) curves show the ability of the model to classify subjects correctly across a range of decision thresholds, i.e. it plots the True Positive Rate vs. False Positive Rate at every probability threshold.
 
@@ -5084,7 +5084,7 @@ Final_Model.score(x_test, y_test)
 
 
 
-## Summary
+# 7) Summary
 
 
 - **Business problem and potential importance of solution**
