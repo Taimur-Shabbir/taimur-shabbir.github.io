@@ -552,7 +552,7 @@ data_2014['phys_health_interview'].fillna(data_2014['phys_health_interview'].mod
 data_2014.drop(['comments', 'Timestamp'], axis = 1, inplace = True)
 ```
 
-**Age**
+#### Age
 
 
 ```python
