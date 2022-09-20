@@ -552,7 +552,7 @@ data_2014['phys_health_interview'].fillna(data_2014['phys_health_interview'].mod
 data_2014.drop(['comments', 'Timestamp'], axis = 1, inplace = True)
 ```
 
-#### Age
+### Age
 
 
 ```python
@@ -898,7 +898,7 @@ data_2014[data_2014['Age'] < 16]
 data_2014['Age'] = np.where(data_2014['Age'] < 16, data_2014['Age'].median(), data_2014['Age'])
 ```
 
-#### Gender
+### Gender
 
 Here we will correct case-sensitive values such that 'male' and 'Male' are counted as 'Male' only, for example.
 
@@ -983,7 +983,7 @@ data = data_2014.loc[ (data_2014['Gender'] == 'Male') | (data_2014['Gender'] == 
 
 There are 27 features in the dataset, so I am going to explore a select few of the more interesting ones
 
-### Explore the outcome variable 'treatment'
+## Explore the outcome variable 'treatment'
 
 As previously mentioned, this dataset does not have an explicit question that asks an individual whether or not they have a mental illness. As a result, our best solution is to use a proxy, for which the 'treatment' question is best.
 
@@ -1044,7 +1044,7 @@ plot_cat('benefits',
 
 About 56% of respondents already receive mental health benefits at their workplace, so there is still a large number of employees who do not have access to such benefits at their workplace
 
-'**Anonymity**'
+#### Anonymity
 
 Asks "Is your anonymity protected if you choose to take advantage of mental health or substance abuse treatment resources?". Like the two questions above, this is a good indicator of company policy towards mental health; a high number of 'No' responses would indicate that employees are not incentivised to discuss mental health or use provided resources
 
@@ -1210,7 +1210,7 @@ It is also possible that this type of cultural attitude worsens mental health co
 
 # 5. Feature Engineering
 
-### Encoding
+## Encoding
 
 Almost all of the features in the dataset are categorical in nature. Some are ordinal, which means a natural order can be imposed to distinguish values. An example would be that "sometimes" is clearly less frequent then "often" which itself is clearly less frequent than "always".
 
@@ -1261,7 +1261,7 @@ data = data.replace({'leave': {'Very difficult':0, 'Somewhat difficult':1,
                                "Don't know": 1.5}})
 ```
 
-### Correlations among variables
+## Correlations among variables
 
 
 ```python
@@ -1618,7 +1618,7 @@ print('Precision score of best model is {}%'.format(precision_bernoulli.mean()*1
 
 To summarise, a tuned BernoulliNB model is the best performer, giving us a Recall score of 75% and a Precision score of 72%
 
-### ROC curve
+## ROC curve
 
 A ROC curve gives a richer interpretation of a model's performance. It plots the True Positive Rate (also known as Recall) against the False Positive rate for different thresholds. Instead of predicting the class ('Yes' or 'No') that a case may belong to, we may instead use probabilities that inform us how likely it is that a case belongs to a certain class.
 
@@ -1694,7 +1694,7 @@ print('BernoulliNB AUC:', roc_auc_score(y_train, y_scores_bnb))
 
 Our BernoulliNB classifier has an AUC of nearly 80% which supports the interpretation above; the model is not perfect (AUC = 1) or even excellent (AUC > 90), but it is still good
 
-### Precision-Recall Curve
+## Precision-Recall Curve
 
 Earlier we mentioned that the threshold which resulted in a Recall of 80% and FPR of 40% was the ideal choice. To find the threshold that results in this combination, we need to plot a precision-recall curve
 
