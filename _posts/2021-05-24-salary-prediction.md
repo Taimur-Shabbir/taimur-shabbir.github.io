@@ -98,9 +98,9 @@ def plot_bar(df, column_base, column_height, colour,
     plt.ylabel(label_y)
 ```
 
-## Part 2 - Discovering the Data
+# Part 2 - Discovering the Data
 
-### Load the data
+## Load the data
 
 
 ```python
@@ -124,7 +124,7 @@ print(len(data_combined))
     1000000
 
 
-###  Cleaning data
+##  Cleaning data
 
 
 ```python
@@ -336,9 +336,9 @@ data_combined['major'].value_counts()
 
 There are no misspellings for the values in any of the columns investigated. Otherwise we would have seen multiple values that denote the same 'thing'. This would be obvious to humans ('physics' vs 'phisics') but not to a machine, which is why this step had to be performed
 
-###  Exploring data (EDA)
+##  Exploring data (EDA)
 
-**Investigate 'salary':**
+### Investigate 'salary'
 
 
 ```python
@@ -362,7 +362,7 @@ plt.ylabel('Frequency')
 <img src="{{ site.url }}{{ site.baseurl }}/images/salary/output_21_1.png" alt="linearly separable data">
 
 
-**Investigate numerical variables 'yearsExperience' and 'milesFromMetropolis':**
+### Investigate numerical variables 'yearsExperience' and 'milesFromMetropolis'
 
 
 ```python
@@ -451,7 +451,7 @@ plot_scatter(small_sample_data, 'yearsExperience',
 
 ----
 
-#### Next I want to see the distributions of salary among different types industries.
+#### Distributions of salary among different types industries.
 
 I will choose 3 diverse values for this variable just to get an idea of the data:
 
@@ -528,7 +528,7 @@ There are noticeable but small differences among the 3 chosen industry in terms 
 This visualisation suggests there may be a link between the type of industry one is in and the salary offered by the job. As a result, the type of industry may have some predictive power in computing new salaries.
 
 ---
-#### Investigating mean salary per industry
+### Investigating mean salary per industry
 
 
 ```python
@@ -669,7 +669,7 @@ sns.heatmap(df_corr.corr(), annot=True, fmt='.2f', cmap='mako')
 
 - These statistics suggest that all of our features (with the exception of Company ID) have predictive power, some more so than others.
 
-###  Establishing a baseline
+##  Establishing a baseline
 
 For a baseline model, I will use the average salary per industry as the prediction.
 
@@ -717,7 +717,7 @@ print('The baseline model MSE is {}'.format(mse))
     The baseline model MSE is 1367.122950785255
 
 
-### Hypothesising A Solution
+## Hypothesising A Solution
 
 The three models I have chosen to train are:
 
@@ -744,9 +744,9 @@ Just as we created the mean salary per industry as a baseline prediction, it cou
 
 On the other hand, the data does not lend itself to any meaningful interaction variables, so these will not be explored
 
-## Part 3 - Engineering Features & Developing Models
+# Part 3 - Engineering Features & Developing Models
 
-### Convert categorical features to numerical features: 'degree'
+## Convert categorical features to numerical features: 'degree'
 
 Let us first encode the 'degree' column type.
 
@@ -786,7 +786,7 @@ data_combined = data_combined.replace({'Degree Category':
                                         'DOCTORAL': 4}})
 ```
 
-### Convert categorical features to numerical features: 'jobType'
+## Convert categorical features to numerical features: 'jobType'
 
 
 Similar to 'degree', 'jobType' can also be considered an ordinal variable, not a nominal one, because a CEO role has the highest possible seniority, followed by a CFO role and so on until a janitor role\*
@@ -1040,7 +1040,7 @@ data_combined
 
 
 
-### Convert categorical features to numerical features: 'major'
+## Convert categorical features to numerical features: 'major'
 
 Unlike 'degree' and 'jobType', 'major' cannot be considered to be an ordinal variable. 'Physics' cannot be said to be greater or lesser in some intuitive way than 'Engineering'. As a result, manual label encoding that maps options to different numbers (1, 2, 3...) is not the optimal approach here
 
@@ -1061,7 +1061,7 @@ for column in major_dummy_data.columns:
 data_combined = pd.concat([data_combined, major_dummy_data], axis=1)
 ```
 
-### Convert categorical features to numerical features: 'industry'
+## Convert categorical features to numerical features: 'industry'
 
 Similar to the 'major' variable, 'industry' is also nominal; we cannot intuitively order its values. Again, we will create dummy variables
 
@@ -1170,7 +1170,7 @@ industry_dummy_data.head()
 data_combined = pd.concat([data_combined, industry_dummy_data], axis=1)
 ```
 
-### Create mean salary for each job type
+## Create mean salary for each job type
 
 
 ```python
@@ -1178,7 +1178,7 @@ data_combined['Mean Salary Per Job Type'] = data_combined.groupby(
                                                                  'jobType')['salary'].transform('mean')
 ```
 
-### Checking for correlations between selected newly engineered features and 'salary'
+## Checking for correlations between selected newly engineered features and 'salary'
 
 We will investigate only the ordinal features and mean salary per job type. Including dummy variables in the correlation heatmap will lead to a congested visualisation
 
@@ -1207,7 +1207,7 @@ Thankfully, our newly created features seem to have decent predictive power, as 
 
 These coefficients are 0.38, 0.58 and 0.6 for Degree Category, Job Type Category and Mean Salary Per Job Type, respectively
 
-### Create and Test models
+## Create and Test models
 
 
 ```python
@@ -1223,7 +1223,7 @@ X_train = X_train.drop(['salary', 'jobId', 'companyId',
 y_train = data_combined['salary']
 ```
 
-#### My metric will be MSE and my goal is <360
+My metric will be MSE and my goal is <360
 
 
 ```python
@@ -1343,7 +1343,7 @@ round(mse_df, 2)
 
 The GradientBoostingRegressor is the best performer so far. I want to fit one more model, which is polynomial regression. It may be the case that adding more features gives us more predictive power
 
-### Polynomial Regression with Degree = 2
+Polynomial Regression with Degree = 2
 
 
 ```python
@@ -1442,9 +1442,9 @@ Since GB Regressor trains models sequentially, it does not scale well with data.
 
 The best model is polynomial regression with degree = 2. It achieved an MSE of 354, a 74.1% improvement over the baseline model MSE of 1367.12
 
-## Part 4 - Deploy
+# Part 4 - Deploy
 
-### Automating our pipeline
+## Automating our pipeline
 
 
 ```python
@@ -1527,7 +1527,7 @@ def train_test_model(model, X_train, y_train, X_test, y_test):
     print('The MSE score on the test set is {}'.format(mse))
 ```
 
-### Summary of Model Performance - MSE
+## Summary of Model Performance - MSE
 
 
 ```python
@@ -1562,7 +1562,7 @@ plot_bar(mse_performance_data, 'Model', 'MSE', '#4E937A',
 <img src="{{ site.url }}{{ site.baseurl }}/images/salary/output_106_0.png" alt="linearly separable data">
 
 
-### Save model and predictions
+## Save model and predictions
 
 
 ```python

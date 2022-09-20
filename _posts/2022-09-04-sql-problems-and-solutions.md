@@ -8,7 +8,7 @@ toc: true
 toc_label: "Table of Contents"
 toc_icon: "cog"
 header:
-  image: /assets/img/brr.png
+  image: /assets/img/brrr.png
   caption: ""
 #image: blind.jpeg
 excerpt: "A live document where I showcase my solutions to Medium and Hard-ranked SQL problems from LeetCode and DataLemur. "
