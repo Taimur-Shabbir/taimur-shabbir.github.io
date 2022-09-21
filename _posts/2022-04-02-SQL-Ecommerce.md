@@ -47,7 +47,7 @@ There is also a [dashboard](https://public.tableau.com/app/profile/taimur.shabbi
 
 Here I'm going to remove the dollar sign '$' in the 'product_cost' and 'product_price' columns, then change type to 'double'. This is done so that we can perform calculations with the data in these columns.
 
-``` SQL
+~~~~SQL
 
 update
 			products
@@ -65,7 +65,7 @@ modify product_cost double
 alter table products
 modify product_price double
 
-```
+~~~~
 
 # Part 2 - Products and Profitability
 
