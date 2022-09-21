@@ -49,15 +49,11 @@ Here I'm going to remove the dollar sign '$' in the 'product_cost' and 'product_
 
 ~~~~SQL
 
-update
-			products
-set
-			product_cost = replace(product_cost, '$','')
+update products
+set product_cost = replace(product_cost, '$','')
 
-update
-			products
-set
-			product_price = replace(product_price, '$','')
+update products
+set product_price = replace(product_price, '$','')
 
 alter table products
 modify product_cost double
