@@ -685,6 +685,13 @@ merged_df.head()
 
 We can find purchase frequency by looking at the number of transactions segmented by different variables
 
+<details>
+<summary>Code</summary>
+
+{% highlight ruby %}
+
+
+
 
 ```python
 def uni_plot(feature, color, suptitle, title):
@@ -714,6 +721,10 @@ def uni_plot(feature, color, suptitle, title):
     plt.show()
 
 ```
+
+{% endhighlight %}
+
+</details>
 
 ### 6.11) Lifestage
 
@@ -796,7 +807,6 @@ uni_plot('brand_name', '#BC7C9C', '"Kettle" and "Smiths" Brand Chips are Purchas
 
 
 
-<div class="alert alert-block alert-info">
 
 
 **Takeaways**:
@@ -808,7 +818,6 @@ uni_plot('brand_name', '#BC7C9C', '"Kettle" and "Smiths" Brand Chips are Purchas
 - The "Kettle" and "Smiths" brands saw the greatest number of purchases *by transaction*, not by number of chip products sold. "Kettle" chips are a clear outlier because there is a substantial gap between it and 2nd-placed "Smiths" chips. "Pringles" and "Doritos" round out the top 4 with the rest of the pack trailing far behind
 
 
-</div>
 
 ### 6.13) Customer Category
 
@@ -825,7 +834,7 @@ uni_plot('PREMIUM_CUSTOMER', '#7A5980',
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaways**:
@@ -837,7 +846,6 @@ uni_plot('PREMIUM_CUSTOMER', '#7A5980',
 
     As a result, while we can say that Mainstream customers purchase chips with the greatest frequency, we **cannot** say that they are responsible for the greatest revenue for our client. As we have no data on pricing, we are unable to explore this avenue further
 
-</div>
 
 
 ```python
@@ -910,7 +918,7 @@ plt.legend().remove()
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaways**:
@@ -925,7 +933,6 @@ It is not clear from the data why this is occuring. There is no clear seasonalit
 
 Whatever factor explains this graph is of paramount importance to the client because it yields an immense increase in sales
 
-</div>
 
 ## 6.2) Bivariate Analysis - Total Qty of Products Sold (Best-Selling Products)
 
@@ -965,7 +972,7 @@ aggregator('brand_name', 'TOT_SALES', '#3B3B58',
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaway**:
@@ -978,7 +985,6 @@ aggregator('brand_name', 'TOT_SALES', '#3B3B58',
 
 
 - As before, "Smiths" and "Pringles" round out the top 4. Interestingly, however, we see that while "Doritos" chips outsold "Smiths" chips in terms of total quantity, Smiths chips were sold more often (by a slight amount). So, on average, customers bought "Smiths" chips more often but in smaller quantities compared to "Doritos" chips
-</div>
 
 ### 6.22) Total Product Sales by Lifestage
 
@@ -995,7 +1001,7 @@ aggregator('LIFESTAGE', 'TOT_SALES', '#CF9893',
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaway**:
@@ -1006,7 +1012,6 @@ aggregator('LIFESTAGE', 'TOT_SALES', '#CF9893',
 
 -    These findings point to the idea that these segments are very valuable to our client and that the client should continue to target and promote these segments in their supermarket’s strategic plan
 
-</div>
 
 ### 6.23) Total Product Sales by Customer Category
 
@@ -1023,7 +1028,7 @@ aggregator('PREMIUM_CUSTOMER', 'TOT_SALES', '#BC7C9C',
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaway**:
@@ -1036,7 +1041,6 @@ aggregator('PREMIUM_CUSTOMER', 'TOT_SALES', '#BC7C9C',
 
 - In other words, it is possible (and even likely) that the Premium customers are responsible for the greatest share of revenue for our client. Premium customers have that category name assigned to them for a reason; they likely buy more expensive chips. And finally, it is important to recall that one of the most basic laws of economics states that price is negatively correlated with quantity demanded, so the visualisation above is quite in line with expectations
 
-</div>
 
 ### 6.24) Total Product Sales by Packet Size
 
@@ -1063,7 +1067,7 @@ plt.legend().remove()
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaway**:
@@ -1075,7 +1079,7 @@ plt.legend().remove()
 
     Below we see that for the subset of customers who buy these larger packets, the best-selling brand is "Smiths", not "Kettle". Recall that "Kettle" was the best-selling brand overall by a tremendous margin overall, but it is nowhere to be found here. We can conclude that either "Kettle" does not offer large packet sizes or if they do, customers do not prefer larger sizes for this brand
 
-</div>
+
 
 
 ```python
@@ -1451,7 +1455,7 @@ plt.show()
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaway**:
@@ -1469,7 +1473,6 @@ plt.show()
 
 - These best segments account for 2 out of every 5 chip products sold, making these extremely valuable segments to target
 
-</div>
 
 ## 7.3) Evolution of Spending Patterns Over Time of 5 Best Segments
 
@@ -1536,7 +1539,7 @@ plt.title('Total Products Purchased by 5 Best Customer Segments - Jan 2018 to De
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaway**:
@@ -1550,8 +1553,6 @@ plt.title('Total Products Purchased by 5 Best Customer Segments - Jan 2018 to De
     - A peak in that level during March 2019
 
 
-
-</div>
 
 ## 7.4) Average Frequency of Chip Purchases for Most Valuable Segments
 
@@ -1681,7 +1682,7 @@ plt.title('Average Number of Days Elapsed Between Purchases for 1000 Randomly Sa
 
 
 
-<div class="alert alert-block alert-info">
+
 
 
 **Takeaways**:
@@ -1700,7 +1701,6 @@ plt.title('Average Number of Days Elapsed Between Purchases for 1000 Randomly Sa
 
     *   There are no segments with "Premium" customers, further supporting my hypothesis that Premium customers buy fewer products overall with less frequency, but they likely buy the more expensive products
 
-</div>
 
 ## 7.5) Average Qty Bought per Customer in Best Segments
 
