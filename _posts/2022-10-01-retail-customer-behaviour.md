@@ -733,6 +733,7 @@ def uni_plot(feature, color, suptitle, title):
         <code data-lang="python">
         <span class="s1">
 
+        {% highlight python %}
 
         def uni_plot(feature, color, suptitle, title):
             a = merged_df[feature].value_counts().to_frame()
@@ -759,7 +760,8 @@ def uni_plot(feature, color, suptitle, title):
 
 
             plt.show()
-
+            
+            {% endhighlight %}
 
         </span>
         </code>
