@@ -693,7 +693,6 @@ We can find purchase frequency by looking at the number of transactions segmente
 <figure class="highlight">
     <pre>
         <code class="python">
-```python
 
 def uni_plot(feature, color, suptitle, title):
     a = merged_df[feature].value_counts().to_frame()
@@ -721,14 +720,42 @@ def uni_plot(feature, color, suptitle, title):
 
     plt.show()
 
-```
         </code>
     </pre>
 </figure>
 </details>
 
+<details>
+<summary>Code123</summary>
+
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">uni_plot</span>(feature, color, suptitle, title):
+    a <span style="color: #666666">=</span> merged_df[feature]<span style="color: #666666">.</span>value_counts()<span style="color: #666666">.</span>to_frame()
+    a<span style="color: #666666">.</span>reset_index(inplace <span style="color: #666666">=</span> <span style="color: #008000">True</span>)
+    a<span style="color: #666666">.</span>rename({<span style="color: #BA2121">&#39;index&#39;</span>:<span style="color: #008000">str</span>(feature), <span style="color: #008000">str</span>(feature):<span style="color: #BA2121">&#39;Frequency&#39;</span>},
+               axis <span style="color: #666666">=</span> <span style="color: #666666">1</span>, inplace <span style="color: #666666">=</span> <span style="color: #008000">True</span>)
+    a<span style="color: #666666">.</span>sort_values(by <span style="color: #666666">=</span> <span style="color: #BA2121">&#39;Frequency&#39;</span>, ascending <span style="color: #666666">=</span> <span style="color: #008000">True</span>, inplace <span style="color: #666666">=</span> <span style="color: #008000">True</span>)
+
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">len</span>(a) <span style="color: #666666">&gt;</span> <span style="color: #666666">10</span>:
+        a <span style="color: #666666">=</span> a<span style="color: #666666">.</span>iloc[<span style="color: #008000">len</span>(a)<span style="color: #666666">-10</span>:<span style="color: #008000">len</span>(a)]
+
+    <span style="color: #008000; font-weight: bold">if</span>  merged_df[feature]<span style="color: #666666">.</span>dtype <span style="color: #666666">==</span> <span style="color: #008000">int</span>:
+        merged_df[feature] <span style="color: #666666">=</span> merged_df[feature]<span style="color: #666666">.</span>astype(<span style="color: #BA2121">&#39;string&#39;</span>)
 
 
+    plt<span style="color: #666666">.</span>figure(figsize <span style="color: #666666">=</span> (<span style="color: #666666">10</span>, <span style="color: #666666">6</span>))
+    plt<span style="color: #666666">.</span>barh(a[feature], a[<span style="color: #BA2121">&#39;Frequency&#39;</span>], color <span style="color: #666666">=</span> color, alpha <span style="color: #666666">=</span> <span style="color: #666666">0.7</span>)
+    plt<span style="color: #666666">.</span>xlabel(<span style="color: #BA2121">&#39;Number of Transactions&#39;</span>, size <span style="color: #666666">=</span> <span style="color: #666666">11</span>)
+    plt<span style="color: #666666">.</span>xticks(size <span style="color: #666666">=</span> <span style="color: #666666">9</span>)
+    plt<span style="color: #666666">.</span>ylabel(<span style="color: #008000">str</span>(feature), size <span style="color: #666666">=</span> <span style="color: #666666">11</span>)
+    plt<span style="color: #666666">.</span>yticks(size <span style="color: #666666">=</span> <span style="color: #666666">9</span>)
+    plt<span style="color: #666666">.</span>title(title, size <span style="color: #666666">=</span> <span style="color: #666666">14</span>)
+    plt<span style="color: #666666">.</span>suptitle(suptitle)
+
+
+    plt<span style="color: #666666">.</span>show()
+</pre></div>
+
+</details>
 
 
 
