@@ -39,6 +39,7 @@ I need to present a strategic recommendation to my team lead that is supported b
     plt.style.use('fivethirtyeight')
     {% endhighlight %} </span></code></pre></figure></details>
 
+
 # 2) Load Datasets
 
 
@@ -747,6 +748,7 @@ merged_df.LYLTY_CARD_NBR.nunique() # yields 72636
 
 And what proportion of the total customers do customers from the above segment make up?
 
+
 <details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     cust_count = []
@@ -794,6 +796,7 @@ And what proportion of the total customers do customers from the above segment m
 
 
 
+
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_35_0.png" alt="None">
 
 
@@ -814,17 +817,18 @@ And what proportion of the total customers do customers from the above segment m
 
 
 
-```python
-uni_plot('PREMIUM_CUSTOMER', '#7A5980',
-         'The Greatest Proportion of Transactions Involve the "Mainstream" Customer Category',
-         'Number of Transactions by Customer Category')
-```
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    uni_plot('PREMIUM_CUSTOMER', '#7A5980',
+             'The Greatest Proportion of Transactions Involve the "Mainstream" Customer Category',
+             'Number of Transactions by Customer Category')
+
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_38_0.png" alt="None">
-
-
 
 
 
@@ -839,38 +843,37 @@ uni_plot('PREMIUM_CUSTOMER', '#7A5980',
     As a result, while we can say that Mainstream customers purchase chips with the greatest frequency, we **cannot** say that they are responsible for the greatest revenue for our client. As we have no data on pricing, we are unable to explore this avenue further
 
 
+As we did with lifestage, let's check what proportion of customers belong to each segment
 
-```python
-# as we did with lifestage, let's check what proportion of customers belong to each segment
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    cust_count = []
+    categories = list(set(merged_df.PREMIUM_CUSTOMER))
 
+    for i in categories:
+        cust_count.append(merged_df[merged_df['PREMIUM_CUSTOMER'] == i]['LYLTY_CARD_NBR'].nunique())
 
-cust_count = []
-categories = list(set(merged_df.PREMIUM_CUSTOMER))
-
-for i in categories:
-    cust_count.append(merged_df[merged_df['PREMIUM_CUSTOMER'] == i]['LYLTY_CARD_NBR'].nunique())
-
-cust_per_category = pd.DataFrame({'Category': categories,
-                                   'num_customers':cust_count})
-
-
-colors = ['#cdb4db', '#ffafcc', '#a2d2ff']
+    cust_per_category = pd.DataFrame({'Category': categories,
+                                       'num_customers':cust_count})
 
 
-fig1, ax1 = plt.subplots(figsize = (9, 8))
-
-ax1.pie(cust_per_category['num_customers'], labels = cust_per_category['Category'],
-        autopct='%1.1f%%', shadow = False, startangle = 90,
-        textprops = {'fontsize':'12'}, colors = colors)
+    colors = ['#cdb4db', '#ffafcc', '#a2d2ff']
 
 
-ax1.axis('equal')  
-plt.title('Customers in Each Segment as Share of All Customers', size = 14)
-plt.suptitle('For every 60 customers, 16 are Premium, 24 are Mainstream and 20 are Budget')
-#plt.tight_layout()
-plt.show()
+    fig1, ax1 = plt.subplots(figsize = (9, 8))
 
-```
+    ax1.pie(cust_per_category['num_customers'], labels = cust_per_category['Category'],
+            autopct='%1.1f%%', shadow = False, startangle = 90,
+            textprops = {'fontsize':'12'}, colors = colors)
+
+
+    ax1.axis('equal')  
+    plt.title('Customers in Each Segment as Share of All Customers', size = 14)
+    plt.suptitle('For every 60 customers, 16 are Premium, 24 are Mainstream and 20 are Budget')
+    #plt.tight_layout()
+    plt.show()
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
@@ -881,28 +884,30 @@ plt.show()
 ### 6.14) Evolution of Number of Transactions Through Time
 
 
-```python
-transactions_per_month = merged_df.year_month.value_counts().to_frame()
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    transactions_per_month = merged_df.year_month.value_counts().to_frame()
 
-transactions_per_month.reset_index(inplace = True)
+    transactions_per_month.reset_index(inplace = True)
 
-transactions_per_month.sort_values(by = 'index', inplace = True)
+    transactions_per_month.sort_values(by = 'index', inplace = True)
 
-transactions_per_month['index'] = transactions_per_month['index'].astype('string')
+    transactions_per_month['index'] = transactions_per_month['index'].astype('string')
 
-transactions_per_month.plot(x = 'index', y = 'year_month',
-                            kind = 'line', figsize = (10, 6),
-                            color = '#A96DA3', alpha = 0.7)
+    transactions_per_month.plot(x = 'index', y = 'year_month',
+                                kind = 'line', figsize = (10, 6),
+                                color = '#A96DA3', alpha = 0.7)
 
-plt.xlabel('Month', size = 11)
-plt.xticks(size = 9)
-plt.ylabel('Number of Transactions', size = 11)
-plt.yticks(size = 9)
-plt.title('Number of Transactions by Month', size = 14)
-plt.suptitle('Vast Majority of Transactions Occur Between 07-2018 and 06-2019')
+    plt.xlabel('Month', size = 11)
+    plt.xticks(size = 9)
+    plt.ylabel('Number of Transactions', size = 11)
+    plt.yticks(size = 9)
+    plt.title('Number of Transactions by Month', size = 14)
+    plt.suptitle('Vast Majority of Transactions Occur Between 07-2018 and 06-2019')
 
-plt.legend().remove()
-```
+    plt.legend().remove()
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
@@ -928,35 +933,37 @@ Whatever factor explains this graph is of paramount importance to the client bec
 
 ## 6.2) Bivariate Analysis - Total Qty of Products Sold (Best-Selling Products)
 
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    def aggregator(x, y, color, suptitle, title):
+        df = merged_df.groupby(x)[y].sum().to_frame().reset_index().sort_values(by = y, ascending = True)
 
-```python
-def aggregator(x, y, color, suptitle, title):
-    df = merged_df.groupby(x)[y].sum().to_frame().reset_index().sort_values(by = y, ascending = True)
+        if len(df) > 10:
+            df = df.iloc[len(df) - 10:len(df)]
 
-    if len(df) > 10:
-        df = df.iloc[len(df) - 10:len(df)]
-
-    plt.figure(figsize = (10, 6))
-    plt.barh(df[x], df[y], color = color, alpha = 0.7)
-    plt.xlabel(y, size = 11)
-    plt.xticks(size = 9)
-    plt.ylabel(x, size = 11)
-    plt.yticks(size = 9)
-    plt.title(title, size = 14)
-    plt.suptitle(suptitle)
+        plt.figure(figsize = (10, 6))
+        plt.barh(df[x], df[y], color = color, alpha = 0.7)
+        plt.xlabel(y, size = 11)
+        plt.xticks(size = 9)
+        plt.ylabel(x, size = 11)
+        plt.yticks(size = 9)
+        plt.title(title, size = 14)
+        plt.suptitle(suptitle)
 
 
-    plt.show()
-```
+        plt.show()
+        {% endhighlight %} </span></code></pre></figure></details>
 
 ### 6.21) Total Product Sales by Brand - Best-Selling Brand
 
 
-```python
-aggregator('brand_name', 'TOT_SALES', '#3B3B58',
-           '"Kettle" chips dominate the competition and significantly outsold competitors',
-           'Top 10 Products By Total Units Sold ')
-```
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    aggregator('brand_name', 'TOT_SALES', '#3B3B58',
+               '"Kettle" chips dominate the competition and significantly outsold competitors',
+               'Top 10 Products By Total Units Sold ')
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
@@ -981,16 +988,17 @@ aggregator('brand_name', 'TOT_SALES', '#3B3B58',
 ### 6.22) Total Product Sales by Lifestage
 
 
-```python
-aggregator('LIFESTAGE', 'TOT_SALES', '#CF9893',
-           'Older Customers are the Biggest Purchasers of Chips',
-           'Total Product Sales by Customer Lifestage')
-```
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    aggregator('LIFESTAGE', 'TOT_SALES', '#CF9893',
+               'Older Customers are the Biggest Purchasers of Chips',
+               'Total Product Sales by Customer Lifestage')
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_50_0.png" alt="None">
-
 
 
 
@@ -1008,16 +1016,17 @@ aggregator('LIFESTAGE', 'TOT_SALES', '#CF9893',
 ### 6.23) Total Product Sales by Customer Category
 
 
-```python
-aggregator('PREMIUM_CUSTOMER', 'TOT_SALES', '#BC7C9C',
-           'Mainstream Category Customers are the Biggest Purchasers of Chips',
-           'Total Product Sales by Customer Category')
-```
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    aggregator('PREMIUM_CUSTOMER', 'TOT_SALES', '#BC7C9C',
+               'Mainstream Category Customers are the Biggest Purchasers of Chips',
+               'Total Product Sales by Customer Category')
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_53_0.png" alt="None">
-
 
 
 
@@ -1037,27 +1046,27 @@ aggregator('PREMIUM_CUSTOMER', 'TOT_SALES', '#BC7C9C',
 ### 6.24) Total Product Sales by Packet Size
 
 
-```python
-merged_df.groupby('Packet Size')['TOT_SALES'].sum().to_frame().reset_index().plot(kind = 'bar',
-                                                                                  x = 'Packet Size',
-                                                                                  y = 'TOT_SALES',
-                                                                                  figsize = (10, 6),
-                                                                                  color = '#7A5980',
-                                                                                  alpha = 0.7)
-plt.xlabel('Packet Size (Grams)', size = 11)
-plt.ylabel("Total Number of Chip Products Sold", size = 11)
-plt.xticks(size = 9)
-plt.yticks(size = 9)
-plt.title('Total Chip Products Sold By Packet Size in grams', size = 14)
-plt.suptitle('Customers Overwhelmingly Prefer 175g and 150g Packet Sizes')
-plt.legend().remove()
-```
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    merged_df.groupby('Packet Size')['TOT_SALES'].sum().to_frame().reset_index().plot(kind = 'bar',
+                                                                                      x = 'Packet Size',
+                                                                                      y = 'TOT_SALES',
+                                                                                      figsize = (10, 6),
+                                                                                      color = '#7A5980',
+                                                                                      alpha = 0.7)
+    plt.xlabel('Packet Size (Grams)', size = 11)
+    plt.ylabel("Total Number of Chip Products Sold", size = 11)
+    plt.xticks(size = 9)
+    plt.yticks(size = 9)
+    plt.title('Total Chip Products Sold By Packet Size in grams', size = 14)
+    plt.suptitle('Customers Overwhelmingly Prefer 175g and 150g Packet Sizes')
+    plt.legend().remove()
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_56_0.png" alt="None">
-
-
 
 
 
@@ -1323,13 +1332,13 @@ merged_df[merged_df['brand_name'].str.contains('Old')]
 
 ## 7.1) Most Valuable Segments by Total Products Sold
 
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    sales_best_segments = merged_df.groupby(['LIFESTAGE', 'PREMIUM_CUSTOMER'])['TOT_SALES'].sum().to_frame().sort_values(by = 'TOT_SALES',
+                                                                                                   ascending = False)
 
-```python
-sales_best_segments = merged_df.groupby(['LIFESTAGE', 'PREMIUM_CUSTOMER'])['TOT_SALES'].sum().to_frame().sort_values(by = 'TOT_SALES',
-                                                                                               ascending = False)
-
-sales_best_segments.head()
-```
+    sales_best_segments.head()
+    {% endhighlight %} </span></code></pre></figure></details>
 
 
 
@@ -1396,56 +1405,56 @@ sales_best_segments.head()
 Let's filter out each best segment and assign them to different dataframes so that we can use these if needed
 
 
-```python
-older_fam_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'OLDER FAMILIES') &
-                                 (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    older_fam_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'OLDER FAMILIES') &
+                                     (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
 
-young_sing_coup_main = merged_df.loc[(merged_df['LIFESTAGE'] == 'YOUNG SINGLES/COUPLES') &
-                                     (merged_df['PREMIUM_CUSTOMER'] == 'Mainstream')]
+    young_sing_coup_main = merged_df.loc[(merged_df['LIFESTAGE'] == 'YOUNG SINGLES/COUPLES') &
+                                         (merged_df['PREMIUM_CUSTOMER'] == 'Mainstream')]
 
-retirees_main = merged_df.loc[(merged_df['LIFESTAGE'] == 'RETIREES') &
-                              (merged_df['PREMIUM_CUSTOMER'] == 'Mainstream')]
+    retirees_main = merged_df.loc[(merged_df['LIFESTAGE'] == 'RETIREES') &
+                                  (merged_df['PREMIUM_CUSTOMER'] == 'Mainstream')]
 
-young_fam_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'YOUNG FAMILIES') &
-                                 (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
+    young_fam_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'YOUNG FAMILIES') &
+                                     (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
 
-older_sing_coup_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'OLDER SINGLES/COUPLES') &
-                                 (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
-```
+    older_sing_coup_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'OLDER SINGLES/COUPLES') &
+                                     (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
+    {% endhighlight %} </span></code></pre></figure></details>
 
 ## 7.2) Most Valuable Segments' Share of All Product Sales
 
 
-```python
-sum_sales_best_segments = sales_best_segments.iloc[:5].sum().sum()
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    sum_sales_best_segments = sales_best_segments.iloc[:5].sum().sum()
 
-labels = ['5 Best Segments', 'All Remaining Segments']
-sizes = [sum_sales_best_segments, sales_best_segments.TOT_SALES.sum() - sum_sales_best_segments]
-explode = (0.05, 0)
-colors = ['#f0a6ca', '#b8bedd']
-
-
-
-fig1, ax1 = plt.subplots(figsize = (6, 6))
-
-ax1.pie(sizes, explode = explode, labels = labels, autopct='%1.1f%%',
-        shadow = False, startangle = 90, textprops = {'fontsize':'12'},
-        colors = colors)
+    labels = ['5 Best Segments', 'All Remaining Segments']
+    sizes = [sum_sales_best_segments, sales_best_segments.TOT_SALES.sum() - sum_sales_best_segments]
+    explode = (0.05, 0)
+    colors = ['#f0a6ca', '#b8bedd']
 
 
-ax1.axis('equal')  
-plt.title('% Split of Sales Comparing Products Sold of 5 Best Segments Vs All Other Segments', size = 14)
-plt.suptitle('Combined Products Sold for 5 Best Segments Account for Nearly 40% of All Products Sold')
-#plt.tight_layout()
-plt.show()
 
-```
+    fig1, ax1 = plt.subplots(figsize = (6, 6))
+
+    ax1.pie(sizes, explode = explode, labels = labels, autopct='%1.1f%%',
+            shadow = False, startangle = 90, textprops = {'fontsize':'12'},
+            colors = colors)
+
+
+    ax1.axis('equal')  
+    plt.title('% Split of Sales Comparing Products Sold of 5 Best Segments Vs All Other Segments', size = 14)
+    plt.suptitle('Combined Products Sold for 5 Best Segments Account for Nearly 40% of All Products Sold')
+    #plt.tight_layout()
+    plt.show()
+    {% endhighlight %} </span></code></pre></figure></details>
+
 
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_65_0.png" alt="None">
-
-
 
 
 
@@ -1469,60 +1478,55 @@ plt.show()
 ## 7.3) Evolution of Spending Patterns Over Time of 5 Best Segments
 
 
-```python
-def segment_sales(lifestage, category, title):
-    df = merged_df.loc[(merged_df['LIFESTAGE'] == lifestage) &
-                                 (merged_df['PREMIUM_CUSTOMER'] == category)]
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    def segment_sales(lifestage, category, title):
+        df = merged_df.loc[(merged_df['LIFESTAGE'] == lifestage) &
+                                     (merged_df['PREMIUM_CUSTOMER'] == category)]
 
-    df = df.groupby('year_month')['TOT_SALES'].sum().reset_index()
+        df = df.groupby('year_month')['TOT_SALES'].sum().reset_index()
 
-    df.rename({'TOT_SALES':title},
-                          axis = 1, inplace = True)
-    return df
-
-
-older_fam_budget_sales = segment_sales('OLDER FAMILIES', 'Budget', 'old_fam_budget_sales')
-young_single_mainstream_sales = segment_sales('YOUNG SINGLES/COUPLES', 'Mainstream', 'young_single_mainstream_sales')
-retirees_mainstream_sales = segment_sales('RETIREES', 'Mainstream', 'retirees_mainstream_sales')
-
-young_families_budget_sales = segment_sales('YOUNG FAMILIES', 'Budget', 'youngFam_budget_sales')
-older_couples_budget_sales = segment_sales('OLDER SINGLES/COUPLES', 'Budget', 'old_sin_couple_sales')
-
-best_segments_sales = pd.merge(older_fam_budget_sales, young_single_mainstream_sales,  on = 'year_month')
-best_segments_sales = pd.merge(best_segments_sales, retirees_mainstream_sales,  on = 'year_month')
-best_segments_sales = pd.merge(best_segments_sales, young_families_budget_sales,  on = 'year_month')
-best_segments_sales = pd.merge(best_segments_sales, older_couples_budget_sales,  on = 'year_month')
+        df.rename({'TOT_SALES':title},
+                              axis = 1, inplace = True)
+        return df
 
 
-best_segments_sales.plot(kind = 'line', x = 'year_month',
-                   y = ['old_fam_budget_sales',
-                        'young_single_mainstream_sales',
-                        'retirees_mainstream_sales',
-                        'youngFam_budget_sales',
-                        'old_sin_couple_sales'],
-                   alpha = 0.7, figsize = (12, 6),
-                   color = ['#987284', '#75B9BE', '#D0D6B5',
-                            '#F9B5AC', '#EE7674'])
-plt.legend(loc = 'lower center', labels = ['Older Families + Budget',
-                                           'Young Singles/Couples + Mainstream',
-                                           'Retirees + Mainstream',
-                                           'Young Families + Budget',
-                                           'Old Singles/Couples + Budget'])
+    older_fam_budget_sales = segment_sales('OLDER FAMILIES', 'Budget', 'old_fam_budget_sales')
+    young_single_mainstream_sales = segment_sales('YOUNG SINGLES/COUPLES', 'Mainstream', 'young_single_mainstream_sales')
+    retirees_mainstream_sales = segment_sales('RETIREES', 'Mainstream', 'retirees_mainstream_sales')
 
-plt.xlabel('Month and Year', size = 11)
-plt.ylabel('Number of Products Sold', size = 11)
-plt.xticks(size = 9)
-plt.yticks(size = 9)
-plt.suptitle('Customers from Best Segments Buy Large Quantities of Chips Only Between 06-2018 and 06-2019')
-plt.title('Total Products Purchased by 5 Best Customer Segments - Jan 2018 to Dec 2019',
-           size = 14)
-```
+    young_families_budget_sales = segment_sales('YOUNG FAMILIES', 'Budget', 'youngFam_budget_sales')
+    older_couples_budget_sales = segment_sales('OLDER SINGLES/COUPLES', 'Budget', 'old_sin_couple_sales')
+
+    best_segments_sales = pd.merge(older_fam_budget_sales, young_single_mainstream_sales,  on = 'year_month')
+    best_segments_sales = pd.merge(best_segments_sales, retirees_mainstream_sales,  on = 'year_month')
+    best_segments_sales = pd.merge(best_segments_sales, young_families_budget_sales,  on = 'year_month')
+    best_segments_sales = pd.merge(best_segments_sales, older_couples_budget_sales,  on = 'year_month')
 
 
+    best_segments_sales.plot(kind = 'line', x = 'year_month',
+                       y = ['old_fam_budget_sales',
+                            'young_single_mainstream_sales',
+                            'retirees_mainstream_sales',
+                            'youngFam_budget_sales',
+                            'old_sin_couple_sales'],
+                       alpha = 0.7, figsize = (12, 6),
+                       color = ['#987284', '#75B9BE', '#D0D6B5',
+                                '#F9B5AC', '#EE7674'])
+    plt.legend(loc = 'lower center', labels = ['Older Families + Budget',
+                                               'Young Singles/Couples + Mainstream',
+                                               'Retirees + Mainstream',
+                                               'Young Families + Budget',
+                                               'Old Singles/Couples + Budget'])
 
-
-    Text(0.5, 1.0, 'Total Products Purchased by 5 Best Customer Segments - Jan 2018 to Dec 2019')
-
+    plt.xlabel('Month and Year', size = 11)
+    plt.ylabel('Number of Products Sold', size = 11)
+    plt.xticks(size = 9)
+    plt.yticks(size = 9)
+    plt.suptitle('Customers from Best Segments Buy Large Quantities of Chips Only Between 06-2018 and 06-2019')
+    plt.title('Total Products Purchased by 5 Best Customer Segments - Jan 2018 to Dec 2019',
+               size = 14)
+    {% endhighlight %} </span></code></pre></figure></details>
 
 
 
@@ -1568,111 +1572,104 @@ I can then find:
 - the collective average purchase frequency for all 5 segments (5000 customers in total)
 
 
-```python
-# create two lists.
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    # create two lists.
 
-# One to store average number of days elapsed between purchases for each customer
+    # One to store average number of days elapsed between purchases for each customer
 
-avg_days_purchase_per_cust = []
+    avg_days_purchase_per_cust = []
 
-# One to store the average number of days elapsed between purchases for each segment
+    # One to store the average number of days elapsed between purchases for each segment
 
-avg_days_cust_segment = []
-
-
-
-def freq_purchase(lifestage, category):
-
-    # filter for required best segment
-    df = merged_df.loc[(merged_df['LIFESTAGE'] == lifestage) & (merged_df['PREMIUM_CUSTOMER'] == category)]
-
-    # randomly sample 1000 customers from this segment
-    random_cust = list(df.sample(n = 1000, random_state = 42).LYLTY_CARD_NBR)
-
-    # write a loop to find the average number of days between purchases for each randomly-sampled customer
-
-    for i in range(len(random_cust)):
-            # isolate to one customer
-            x = df[df['LYLTY_CARD_NBR'] == random_cust[i]].copy()
-
-            # sort by date
-            x.sort_values(by = ['DATE'], inplace = True)
-
-            # find difference in days between each purchase
-            x['Days Since Last Purchase'] = (x['DATE'] - x['DATE'].shift(1))
-
-            # fill null values
-            x['Days Since Last Purchase'] = x['Days Since Last Purchase'].fillna(pd.Timedelta(seconds=0))
-
-            # remove first purchase date because it cannot compare to an 'earlier' date
-            # then find the mean
-            avg_1 = x.iloc[1:len(df)]['Days Since Last Purchase'].copy().mean()
-
-            # add each individual customer mean to our pre-defined list list
-            avg_days_purchase_per_cust.append(avg_1)
-
-            # when we have collected 1000 customer averages (which comprises a single segment),
-            # find the average of those 100 averages. This gives the average for the whole segment
-            # then add this segment-level average to our second pre-defined list
-
-            if len(avg_days_purchase_per_cust) > 999:
-                avg_2 = pd.to_timedelta(pd.Series(avg_days_purchase_per_cust)).mean()
-
-                # add average of this segment to another list
-                avg_days_cust_segment.append(avg_2)
-
-                # wipe initial list clean for next run of loop
-                avg_days_purchase_per_cust.clear()
-            else:
-                pass
-
-```
-
-
-```python
-freq_purchase('OLDER FAMILIES', 'Budget')
-freq_purchase('YOUNG SINGLES/COUPLES', 'Mainstream')
-freq_purchase('RETIREES', 'Mainstream')
-freq_purchase('YOUNG FAMILIES', 'Budget')
-freq_purchase('OLDER SINGLES/COUPLES', 'Budget')
-
-avg_days_cust_segment = [x.days for x in avg_days_cust_segment]
-avg_days_cust_segment = pd.DataFrame({'Segments': ['Older Families + Budget',
-                                'Younger Singles/Couples + Mainstream',
-                                'Retirees + Mainstream',
-                                'Young Families + Budget',
-                                'Older Singles/Couples + Budget'],
-                                'Average Number of Days Between Purchases':avg_days_cust_segment})
-
-```
-
-
-```python
-plt.figure(figsize = (8, 6))
-plt.barh(width = avg_days_cust_segment['Average Number of Days Between Purchases'],
-         y = avg_days_cust_segment['Segments'], color = '#CF9893', alpha = 0.7)
-
-plt.xlabel('Average Number of Days Between Purchases', size = 11)
-plt.ylabel('Customer Segment', size = 11)
-plt.xticks(size = 9)
-plt.yticks(size = 9)
-plt.suptitle('Customers from Best Segments Buy Chips Between Every 2 to 4 Months on Average')
-plt.title('Average Number of Days Elapsed Between Purchases for 1000 Randomly Sampled Customers From Best Segments',
-           size = 14)
-```
+    avg_days_cust_segment = []
 
 
 
+    def freq_purchase(lifestage, category):
 
-    Text(0.5, 1.0, 'Average Number of Days Elapsed Between Purchases for 1000 Randomly Sampled Customers From Best Segments')
+        # filter for required best segment
+        df = merged_df.loc[(merged_df['LIFESTAGE'] == lifestage) & (merged_df['PREMIUM_CUSTOMER'] == category)]
+
+        # randomly sample 1000 customers from this segment
+        random_cust = list(df.sample(n = 1000, random_state = 42).LYLTY_CARD_NBR)
+
+        # write a loop to find the average number of days between purchases for each randomly-sampled customer
+
+        for i in range(len(random_cust)):
+                # isolate to one customer
+                x = df[df['LYLTY_CARD_NBR'] == random_cust[i]].copy()
+
+                # sort by date
+                x.sort_values(by = ['DATE'], inplace = True)
+
+                # find difference in days between each purchase
+                x['Days Since Last Purchase'] = (x['DATE'] - x['DATE'].shift(1))
+
+                # fill null values
+                x['Days Since Last Purchase'] = x['Days Since Last Purchase'].fillna(pd.Timedelta(seconds=0))
+
+                # remove first purchase date because it cannot compare to an 'earlier' date
+                # then find the mean
+                avg_1 = x.iloc[1:len(df)]['Days Since Last Purchase'].copy().mean()
+
+                # add each individual customer mean to our pre-defined list list
+                avg_days_purchase_per_cust.append(avg_1)
+
+                # when we have collected 1000 customer averages (which comprises a single segment),
+                # find the average of those 100 averages. This gives the average for the whole segment
+                # then add this segment-level average to our second pre-defined list
+
+                if len(avg_days_purchase_per_cust) > 999:
+                    avg_2 = pd.to_timedelta(pd.Series(avg_days_purchase_per_cust)).mean()
+
+                    # add average of this segment to another list
+                    avg_days_cust_segment.append(avg_2)
+
+                    # wipe initial list clean for next run of loop
+                    avg_days_purchase_per_cust.clear()
+                else:
+                    pass
+      {% endhighlight %} </span></code></pre></figure></details>
 
 
+
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    freq_purchase('OLDER FAMILIES', 'Budget')
+    freq_purchase('YOUNG SINGLES/COUPLES', 'Mainstream')
+    freq_purchase('RETIREES', 'Mainstream')
+    freq_purchase('YOUNG FAMILIES', 'Budget')
+    freq_purchase('OLDER SINGLES/COUPLES', 'Budget')
+
+    avg_days_cust_segment = [x.days for x in avg_days_cust_segment]
+    avg_days_cust_segment = pd.DataFrame({'Segments': ['Older Families + Budget',
+                                    'Younger Singles/Couples + Mainstream',
+                                    'Retirees + Mainstream',
+                                    'Young Families + Budget',
+                                    'Older Singles/Couples + Budget'],
+                                    'Average Number of Days Between Purchases':avg_days_cust_segment})
+    {% endhighlight %} </span></code></pre></figure></details>
+
+
+<details><summary>Code789</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    plt.figure(figsize = (8, 6))
+    plt.barh(width = avg_days_cust_segment['Average Number of Days Between Purchases'],
+             y = avg_days_cust_segment['Segments'], color = '#CF9893', alpha = 0.7)
+
+    plt.xlabel('Average Number of Days Between Purchases', size = 11)
+    plt.ylabel('Customer Segment', size = 11)
+    plt.xticks(size = 9)
+    plt.yticks(size = 9)
+    plt.suptitle('Customers from Best Segments Buy Chips Between Every 2 to 4 Months on Average')
+    plt.title('Average Number of Days Elapsed Between Purchases for 1000 Randomly Sampled Customers From Best Segments',
+               size = 14)
+    {% endhighlight %} </span></code></pre></figure></details>
 
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_73_1.png" alt="None">
-
-
 
 
 
