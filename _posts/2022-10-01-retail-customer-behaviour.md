@@ -28,15 +28,16 @@ I need to present a strategic recommendation to my team lead that is supported b
 # 1) Imports and set-up
 
 
-```python
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import datetime
+<details><summary>Code</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import datetime
 
-plt.style.use('fivethirtyeight')
-```
+    plt.style.use('fivethirtyeight')
+    {% endhighlight %} </span></code></pre></figure></details>
 
 # 2) Load Datasets
 
@@ -686,56 +687,8 @@ merged_df.head()
 We can find purchase frequency by looking at the number of transactions segmented by different variables
 
 
-<details>
-<summary>Code</summary>
 
-<figure class="highlight">
-    <pre>
-        <code data-lang="python">
-        <span class="s1">
-
-        {% highlight python %}
-
-        def uni_plot(feature, color, suptitle, title):
-            a = merged_df[feature].value_counts().to_frame()
-            a.reset_index(inplace = True)
-            a.rename({'index':str(feature), str(feature):'Frequency'},
-                       axis = 1, inplace = True)
-            a.sort_values(by = 'Frequency', ascending = True, inplace = True)
-
-            if len(a) > 10:
-                a = a.iloc[len(a)-10:len(a)]
-
-            if  merged_df[feature].dtype == int:
-                merged_df[feature] = merged_df[feature].astype('string')
-
-
-            plt.figure(figsize = (10, 6))
-            plt.barh(a[feature], a['Frequency'], color = color, alpha = 0.7)
-            plt.xlabel('Number of Transactions', size = 11)
-            plt.xticks(size = 9)
-            plt.ylabel(str(feature), size = 11)
-            plt.yticks(size = 9)
-            plt.title(title, size = 14)
-            plt.suptitle(suptitle)
-
-
-            plt.show()
-
-            {% endhighlight %}
-
-        </span>
-        </code>
-    </pre>
-</figure>
-</details>
-
-
-
-
-
-
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     def uni_plot(feature, color, suptitle, title):
         a = merged_df[feature].value_counts().to_frame()
@@ -768,10 +721,11 @@ We can find purchase frequency by looking at the number of transactions segmente
 ### 6.11) Lifestage
 
 
-```python
-uni_plot('LIFESTAGE', '#CF9893', 'Older Customers Purchase Chips Most Frequently',
+<details><summary>Code</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    uni_plot('LIFESTAGE', '#CF9893', 'Older Customers Purchase Chips Most Frequently',
          'Distribution of Transactions by Customers\' Lifestage')
-```
+         {% endhighlight %} </span></code></pre></figure></details>
 
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_31_0.png" alt="None">
@@ -791,40 +745,37 @@ merged_df.LYLTY_CARD_NBR.nunique() # yields 72636
     72636
 
 
+And what proportion of the total customers do customers from the above segment make up?
+
+<details><summary>Code</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    cust_count = []
+    lifestages = list(set(merged_df.LIFESTAGE))
+
+    for i in lifestages:
+        cust_count.append(merged_df[merged_df['LIFESTAGE'] == i]['LYLTY_CARD_NBR'].nunique())
+
+    cust_per_lifestage = pd.DataFrame({'Lifestage': lifestages,
+                                       'num_customers':cust_count})
 
 
-```python
-# and what proportion of the total customers do customers from the above segments
-
-cust_count = []
-lifestages = list(set(merged_df.LIFESTAGE))
-
-for i in lifestages:
-    cust_count.append(merged_df[merged_df['LIFESTAGE'] == i]['LYLTY_CARD_NBR'].nunique())
-
-cust_per_lifestage = pd.DataFrame({'Lifestage': lifestages,
-                                   'num_customers':cust_count})
+    colors = ['#fbf8cc', '#fde4cf', '#f1c0e8',
+              '#cfbaf0', '#a3c4f3', '#8eecf5',
+              '#b9fbc0']
 
 
-colors = ['#fbf8cc', '#fde4cf', '#f1c0e8',
-          '#cfbaf0', '#a3c4f3', '#8eecf5',
-          '#b9fbc0']
+    fig1, ax1 = plt.subplots(figsize = (9, 8))
+
+    ax1.pie(cust_per_lifestage['num_customers'], labels = cust_per_lifestage['Lifestage'],
+            autopct='%1.1f%%', shadow = False, startangle = 90,
+            textprops = {'fontsize':'12'}, colors = colors)
 
 
-fig1, ax1 = plt.subplots(figsize = (9, 8))
-
-ax1.pie(cust_per_lifestage['num_customers'], labels = cust_per_lifestage['Lifestage'],
-        autopct='%1.1f%%', shadow = False, startangle = 90,
-        textprops = {'fontsize':'12'}, colors = colors)
-
-
-ax1.axis('equal')  
-plt.title('Customers in Each Segment as Share of All Customers', size = 14)
-plt.suptitle('Retirees and Older Singles/Couples Account for 2 Out of Every 5 Customers')
-#plt.tight_layout()
-plt.show()
-
-```
+    ax1.axis('equal')  
+    plt.title('Customers in Each Segment as Share of All Customers', size = 14)
+    plt.suptitle('Retirees and Older Singles/Couples Account for 2 Out of Every 5 Customers')
+    plt.show()
+    {% endhighlight %} </span></code></pre></figure></details>
 
 
 
@@ -835,10 +786,11 @@ plt.show()
 ### 6.12) Product Name
 
 
-```python
-uni_plot('brand_name', '#BC7C9C', '"Kettle" and "Smiths" Brand Chips are Purchased with the Greatest Frequency',
+<details><summary>Code</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    uni_plot('brand_name', '#BC7C9C', '"Kettle" and "Smiths" Brand Chips are Purchased with the Greatest Frequency',
          'Top 10 Most Frequently Purchased Products (Number of Transactions)')
-```
+    {% endhighlight %} </span></code></pre></figure></details>
 
 
 
@@ -859,6 +811,7 @@ uni_plot('brand_name', '#BC7C9C', '"Kettle" and "Smiths" Brand Chips are Purchas
 
 
 ### 6.13) Customer Category
+
 
 
 ```python
