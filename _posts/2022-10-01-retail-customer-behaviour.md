@@ -688,7 +688,7 @@ We can find purchase frequency by looking at the number of transactions segmente
 
 <details>
 
-<summary>Preview</summary>
+<summary>Code</summary>
 
 <figure class="highlight">
     <pre>
@@ -726,16 +726,7 @@ def uni_plot(feature, color, suptitle, title):
     </pre>
 </figure>
 
-<details>
-<summary>Preview</summary>
 
-<figure class="highlight">
-    <pre>
-        <code class="language-ruby" data-lang="ruby">
-        <span class="nb">puts</span> <span class="s1">'Expanded message'</span>
-        </code>
-    </pre>
-</figure>
 
 
 
