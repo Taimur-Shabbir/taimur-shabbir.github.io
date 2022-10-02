@@ -687,46 +687,7 @@ We can find purchase frequency by looking at the number of transactions segmente
 
 
 <details>
-
 <summary>Code</summary>
-
-<figure class="highlight">
-    <pre>
-        <code id="python_code">
-
-def uni_plot(feature, color, suptitle, title):
-    a = merged_df[feature].value_counts().to_frame()
-    a.reset_index(inplace = True)
-    a.rename({'index':str(feature), str(feature):'Frequency'},
-               axis = 1, inplace = True)
-    a.sort_values(by = 'Frequency', ascending = True, inplace = True)
-
-    if len(a) > 10:
-        a = a.iloc[len(a)-10:len(a)]
-
-    if  merged_df[feature].dtype == int:
-        merged_df[feature] = merged_df[feature].astype('string')
-
-
-    plt.figure(figsize = (10, 6))
-    plt.barh(a[feature], a['Frequency'], color = color, alpha = 0.7)
-    plt.xlabel('Number of Transactions', size = 11)
-    plt.xticks(size = 9)
-    plt.ylabel(str(feature), size = 11)
-    plt.yticks(size = 9)
-    plt.title(title, size = 14)
-    plt.suptitle(suptitle)
-
-
-    plt.show()
-
-        </code>
-    </pre>
-</figure>
-</details>
-
-<details>
-<summary>Code356</summary>
 
 <figure class="highlight">
     <pre>
@@ -760,12 +721,48 @@ def uni_plot(feature, color, suptitle, title):
 
 
             plt.show()
-            
+
             {% endhighlight %}
 
         </span>
         </code>
     </pre>
+</figure>
+</details>
+
+
+
+<details>
+<summary>Code789</summary>
+
+<figure class="highlight">
+    <pre><code data-lang="python"><span class="s1">{% highlight python %}def uni_plot(feature, color, suptitle, title):
+        a = merged_df[feature].value_counts().to_frame()
+        a.reset_index(inplace = True)
+        a.rename({'index':str(feature), str(feature):'Frequency'},
+                   axis = 1, inplace = True)
+        a.sort_values(by = 'Frequency', ascending = True, inplace = True)
+
+        if len(a) > 10:
+            a = a.iloc[len(a)-10:len(a)]
+
+        if  merged_df[feature].dtype == int:
+            merged_df[feature] = merged_df[feature].astype('string')
+
+
+        plt.figure(figsize = (10, 6))
+        plt.barh(a[feature], a['Frequency'], color = color, alpha = 0.7)
+        plt.xlabel('Number of Transactions', size = 11)
+        plt.xticks(size = 9)
+        plt.ylabel(str(feature), size = 11)
+        plt.yticks(size = 9)
+        plt.title(title, size = 14)
+        plt.suptitle(suptitle)
+
+
+        plt.show()
+
+        {% endhighlight %}</span></code></pre>
 </figure>
 </details>
 
