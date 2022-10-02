@@ -736,7 +736,8 @@ We can find purchase frequency by looking at the number of transactions segmente
 
 
 <details><summary>Code789</summary><figure class="highlight">
-    <pre><code data-lang="python"><span class="s1"> {% highlight python %} def uni_plot(feature, color, suptitle, title):
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    def uni_plot(feature, color, suptitle, title):
         a = merged_df[feature].value_counts().to_frame()
         a.reset_index(inplace = True)
         a.rename({'index':str(feature), str(feature):'Frequency'},
@@ -761,7 +762,6 @@ We can find purchase frequency by looking at the number of transactions segmente
 
 
         plt.show()
-
         {% endhighlight %} </span></code></pre></figure></details>
 
 
