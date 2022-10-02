@@ -692,7 +692,7 @@ We can find purchase frequency by looking at the number of transactions segmente
 
 <figure class="highlight">
     <pre>
-        <code class="python">
+        <code id="python_code">
 
 def uni_plot(feature, color, suptitle, title):
     a = merged_df[feature].value_counts().to_frame()
