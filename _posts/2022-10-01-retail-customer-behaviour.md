@@ -817,7 +817,7 @@ And what proportion of the total customers do customers from the above segment m
 
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     uni_plot('PREMIUM_CUSTOMER', '#7A5980',
              'The Greatest Proportion of Transactions Involve the "Mainstream" Customer Category',
@@ -845,7 +845,7 @@ And what proportion of the total customers do customers from the above segment m
 
 As we did with lifestage, let's check what proportion of customers belong to each segment
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     cust_count = []
     categories = list(set(merged_df.PREMIUM_CUSTOMER))
@@ -884,7 +884,7 @@ As we did with lifestage, let's check what proportion of customers belong to eac
 ### 6.14) Evolution of Number of Transactions Through Time
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     transactions_per_month = merged_df.year_month.value_counts().to_frame()
 
@@ -933,7 +933,7 @@ Whatever factor explains this graph is of paramount importance to the client bec
 
 ## 6.2) Bivariate Analysis - Total Qty of Products Sold (Best-Selling Products)
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     def aggregator(x, y, color, suptitle, title):
         df = merged_df.groupby(x)[y].sum().to_frame().reset_index().sort_values(by = y, ascending = True)
@@ -957,7 +957,7 @@ Whatever factor explains this graph is of paramount importance to the client bec
 ### 6.21) Total Product Sales by Brand - Best-Selling Brand
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     aggregator('brand_name', 'TOT_SALES', '#3B3B58',
                '"Kettle" chips dominate the competition and significantly outsold competitors',
@@ -988,7 +988,7 @@ Whatever factor explains this graph is of paramount importance to the client bec
 ### 6.22) Total Product Sales by Lifestage
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     aggregator('LIFESTAGE', 'TOT_SALES', '#CF9893',
                'Older Customers are the Biggest Purchasers of Chips',
@@ -1016,7 +1016,7 @@ Whatever factor explains this graph is of paramount importance to the client bec
 ### 6.23) Total Product Sales by Customer Category
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     aggregator('PREMIUM_CUSTOMER', 'TOT_SALES', '#BC7C9C',
                'Mainstream Category Customers are the Biggest Purchasers of Chips',
@@ -1046,7 +1046,7 @@ Whatever factor explains this graph is of paramount importance to the client bec
 ### 6.24) Total Product Sales by Packet Size
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     merged_df.groupby('Packet Size')['TOT_SALES'].sum().to_frame().reset_index().plot(kind = 'bar',
                                                                                       x = 'Packet Size',
@@ -1332,7 +1332,7 @@ merged_df[merged_df['brand_name'].str.contains('Old')]
 
 ## 7.1) Most Valuable Segments by Total Products Sold
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     sales_best_segments = merged_df.groupby(['LIFESTAGE', 'PREMIUM_CUSTOMER'])['TOT_SALES'].sum().to_frame().sort_values(by = 'TOT_SALES',
                                                                                                    ascending = False)
@@ -1405,7 +1405,7 @@ merged_df[merged_df['brand_name'].str.contains('Old')]
 Let's filter out each best segment and assign them to different dataframes so that we can use these if needed
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     older_fam_budget = merged_df.loc[(merged_df['LIFESTAGE'] == 'OLDER FAMILIES') &
                                      (merged_df['PREMIUM_CUSTOMER'] == 'Budget')]
@@ -1426,7 +1426,7 @@ Let's filter out each best segment and assign them to different dataframes so th
 ## 7.2) Most Valuable Segments' Share of All Product Sales
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     sum_sales_best_segments = sales_best_segments.iloc[:5].sum().sum()
 
@@ -1478,7 +1478,7 @@ Let's filter out each best segment and assign them to different dataframes so th
 ## 7.3) Evolution of Spending Patterns Over Time of 5 Best Segments
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     def segment_sales(lifestage, category, title):
         df = merged_df.loc[(merged_df['LIFESTAGE'] == lifestage) &
@@ -1572,7 +1572,7 @@ I can then find:
 - the collective average purchase frequency for all 5 segments (5000 customers in total)
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     # create two lists.
 
@@ -1634,7 +1634,7 @@ I can then find:
 
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     freq_purchase('OLDER FAMILIES', 'Budget')
     freq_purchase('YOUNG SINGLES/COUPLES', 'Mainstream')
@@ -1652,7 +1652,7 @@ I can then find:
     {% endhighlight %} </span></code></pre></figure></details>
 
 
-<details><summary>Code789</summary><figure class="highlight">
+<details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
     plt.figure(figsize = (8, 6))
     plt.barh(width = avg_days_cust_segment['Average Number of Days Between Purchases'],
@@ -1694,37 +1694,41 @@ I can then find:
 ## 7.5) Average Qty Bought per Customer in Best Segments
 
 
-```python
-print('Average Qty Bought Per Customer in the following segments is: ')
+<details><summary>Code</summary><figure class="highlight">
+    <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    print('Average Qty Bought Per Customer in the following segments is: ')
 
-print('Older Families + Budget: {:0.2f}'.format(round(older_fam_budget.TOT_SALES.sum()/
-                                                      older_fam_budget.LYLTY_CARD_NBR.nunique()), 2))
+    print('Older Families + Budget: {:0.2f}'.format(round(older_fam_budget.TOT_SALES.sum()/
+                                                          older_fam_budget.LYLTY_CARD_NBR.nunique()), 2))
 
-print('Young Singles/Couples + Mainstream: {:0.2f}'.format(young_sing_coup_main.TOT_SALES.sum()/
-                                                           young_sing_coup_main.LYLTY_CARD_NBR.nunique()))
+    print('Young Singles/Couples + Mainstream: {:0.2f}'.format(young_sing_coup_main.TOT_SALES.sum()/
+                                                               young_sing_coup_main.LYLTY_CARD_NBR.nunique()))
 
-print('Retirees + Mainstream: {:0.2f}'.format(retirees_main.TOT_SALES.sum()/
-                                              retirees_main.LYLTY_CARD_NBR.nunique()))
+    print('Retirees + Mainstream: {:0.2f}'.format(retirees_main.TOT_SALES.sum()/
+                                                  retirees_main.LYLTY_CARD_NBR.nunique()))
 
-print('Young Families + Budget: {:0.2f}'.format(young_fam_budget.TOT_SALES.sum()/
-                                                young_fam_budget.LYLTY_CARD_NBR.nunique()))
+    print('Young Families + Budget: {:0.2f}'.format(young_fam_budget.TOT_SALES.sum()/
+                                                    young_fam_budget.LYLTY_CARD_NBR.nunique()))
 
-print('Older Singles/Couples + Budget: {:0.2f}'.format(older_sing_coup_budget.TOT_SALES.sum()/
-                                                       older_sing_coup_budget.LYLTY_CARD_NBR.nunique()))
+    print('Older Singles/Couples + Budget: {:0.2f}'.format(older_sing_coup_budget.TOT_SALES.sum()/
+                                                           older_sing_coup_budget.LYLTY_CARD_NBR.nunique()))
+    {% endhighlight %} </span></code></pre></figure></details>
 
-```
 
-    Average Qty Bought Per Customer in the following segments is:
+Average Qty Bought Per Customer in the following segments is:
+
+```Python
+
     Older Families + Budget: 36.00
     Young Singles/Couples + Mainstream: 19.49
     Retirees + Mainstream: 24.03
     Young Families + Budget: 34.69
     Older Singles/Couples + Budget: 27.75
+```
 
 
 While the Young Singles/Couples + Mainstream and Retirees + Mainstream segments buy more chips overall, they also have a proportionally greater number of customers. This means that, on a per customer basis, the Young Families + Budget segment is more valuable because customers in this segment buy more chips on average than in the two aforementioned segments
 
-<div class="alert-success">
 
 # 8) Conclusions
 
@@ -1745,16 +1749,7 @@ If we pivot and look at the brand and product-centric inferences, we find that K
 Interestingly, when it comes to packet sizes, Kettle does not seem to offer larger packet sizes (those including and above 270g), so Smiths is the most popular brand here. Generally, mid-sized packets (150g, 170g and 175g) are the most popular with customers by far. However, there is a set of customers that does prefer the aforementioned larger packets.
 
 
-Lastly, there is something peculiar occuring with the purchasing behaviour with respect to time. Something caused total purchases to increase tremendously in June 2018. This stayed at a high level until July 2019, when purchases crashed and returned to pre-June 2019. I am unsure regarding why this occurred. Maybe new supermarkets were opened which increased sales, but that would not explain why sales crashed again in July 2019 (unless these supermarkets were closed in that month). So this warrants further investigation.
+Lastly, there is something peculiar occurring with the purchasing behaviour with respect to time. Something caused total purchases to increase tremendously in June 2018. This stayed at a high level until July 2019, when purchases crashed and returned to pre-June 2019. I am unsure regarding why this occurred. Maybe new supermarkets were opened which increased sales, but that would not explain why sales crashed again in July 2019 (unless these supermarkets were closed in that month). So this warrants further investigation.
 
 
 Overall, my recommendation to our client is to focus on the segments where customers have families and are in the budget category. Brand-wise, it would be a good idea to promote Kettle, Doritos and Smiths chips overall, and Smiths and Doritos chips in the larger packet sizes
-
-
-</div>
-
-
-
-```python
-
-```
