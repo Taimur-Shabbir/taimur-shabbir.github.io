@@ -692,8 +692,7 @@ We can find purchase frequency by looking at the number of transactions segmente
 
 <figure class="highlight">
     <pre>
-        <code class="language-python" data-lang="python">
-        <span class="s1">
+        <code class="python">
 ```python
 
 def uni_plot(feature, color, suptitle, title):
@@ -723,11 +722,10 @@ def uni_plot(feature, color, suptitle, title):
     plt.show()
 
 ```
-        </span>
         </code>
     </pre>
 </figure>
-
+</details>
 
 
 
