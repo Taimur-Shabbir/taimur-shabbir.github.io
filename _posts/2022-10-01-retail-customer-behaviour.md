@@ -726,37 +726,46 @@ def uni_plot(feature, color, suptitle, title):
 </details>
 
 <details>
-<summary>Code123</summary>
+<summary>Code356</summary>
 
-<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">uni_plot</span>(feature, color, suptitle, title):
-    a <span style="color: #666666">=</span> merged_df[feature]<span style="color: #666666">.</span>value_counts()<span style="color: #666666">.</span>to_frame()
-    a<span style="color: #666666">.</span>reset_index(inplace <span style="color: #666666">=</span> <span style="color: #008000">True</span>)
-    a<span style="color: #666666">.</span>rename({<span style="color: #BA2121">&#39;index&#39;</span>:<span style="color: #008000">str</span>(feature), <span style="color: #008000">str</span>(feature):<span style="color: #BA2121">&#39;Frequency&#39;</span>},
-               axis <span style="color: #666666">=</span> <span style="color: #666666">1</span>, inplace <span style="color: #666666">=</span> <span style="color: #008000">True</span>)
-    a<span style="color: #666666">.</span>sort_values(by <span style="color: #666666">=</span> <span style="color: #BA2121">&#39;Frequency&#39;</span>, ascending <span style="color: #666666">=</span> <span style="color: #008000">True</span>, inplace <span style="color: #666666">=</span> <span style="color: #008000">True</span>)
-
-    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">len</span>(a) <span style="color: #666666">&gt;</span> <span style="color: #666666">10</span>:
-        a <span style="color: #666666">=</span> a<span style="color: #666666">.</span>iloc[<span style="color: #008000">len</span>(a)<span style="color: #666666">-10</span>:<span style="color: #008000">len</span>(a)]
-
-    <span style="color: #008000; font-weight: bold">if</span>  merged_df[feature]<span style="color: #666666">.</span>dtype <span style="color: #666666">==</span> <span style="color: #008000">int</span>:
-        merged_df[feature] <span style="color: #666666">=</span> merged_df[feature]<span style="color: #666666">.</span>astype(<span style="color: #BA2121">&#39;string&#39;</span>)
+<figure class="highlight">
+    <pre>
+        <code data-lang="python">
+        <span class="s1">
 
 
-    plt<span style="color: #666666">.</span>figure(figsize <span style="color: #666666">=</span> (<span style="color: #666666">10</span>, <span style="color: #666666">6</span>))
-    plt<span style="color: #666666">.</span>barh(a[feature], a[<span style="color: #BA2121">&#39;Frequency&#39;</span>], color <span style="color: #666666">=</span> color, alpha <span style="color: #666666">=</span> <span style="color: #666666">0.7</span>)
-    plt<span style="color: #666666">.</span>xlabel(<span style="color: #BA2121">&#39;Number of Transactions&#39;</span>, size <span style="color: #666666">=</span> <span style="color: #666666">11</span>)
-    plt<span style="color: #666666">.</span>xticks(size <span style="color: #666666">=</span> <span style="color: #666666">9</span>)
-    plt<span style="color: #666666">.</span>ylabel(<span style="color: #008000">str</span>(feature), size <span style="color: #666666">=</span> <span style="color: #666666">11</span>)
-    plt<span style="color: #666666">.</span>yticks(size <span style="color: #666666">=</span> <span style="color: #666666">9</span>)
-    plt<span style="color: #666666">.</span>title(title, size <span style="color: #666666">=</span> <span style="color: #666666">14</span>)
-    plt<span style="color: #666666">.</span>suptitle(suptitle)
+        def uni_plot(feature, color, suptitle, title):
+            a = merged_df[feature].value_counts().to_frame()
+            a.reset_index(inplace = True)
+            a.rename({'index':str(feature), str(feature):'Frequency'},
+                       axis = 1, inplace = True)
+            a.sort_values(by = 'Frequency', ascending = True, inplace = True)
+
+            if len(a) > 10:
+                a = a.iloc[len(a)-10:len(a)]
+
+            if  merged_df[feature].dtype == int:
+                merged_df[feature] = merged_df[feature].astype('string')
 
 
-    plt<span style="color: #666666">.</span>show()
-</pre></div>
+            plt.figure(figsize = (10, 6))
+            plt.barh(a[feature], a['Frequency'], color = color, alpha = 0.7)
+            plt.xlabel('Number of Transactions', size = 11)
+            plt.xticks(size = 9)
+            plt.ylabel(str(feature), size = 11)
+            plt.yticks(size = 9)
+            plt.title(title, size = 14)
+            plt.suptitle(suptitle)
 
+
+            plt.show()
+
+
+        </span>
+        </code>
+    </pre>
+</figure>
 </details>
-
 
 
 ### 6.11) Lifestage
