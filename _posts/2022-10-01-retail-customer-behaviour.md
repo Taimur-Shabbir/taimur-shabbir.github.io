@@ -685,15 +685,16 @@ merged_df.head()
 
 We can find purchase frequency by looking at the number of transactions segmented by different variables
 
+
 <details>
-<summary>Code</summary>
 
-{% highlight ruby %}
+<summary>Preview</summary>
 
+<figure class="highlight">
+    <pre>
+        <code class="language-python" data-lang="python">
+        <span class="nb">puts</span> <span class="s1">
 
-
-
-```python
 def uni_plot(feature, color, suptitle, title):
     a = merged_df[feature].value_counts().to_frame()
     a.reset_index(inplace = True)
@@ -720,11 +721,25 @@ def uni_plot(feature, color, suptitle, title):
 
     plt.show()
 
-```
+        </span>
+        </code>
+    </pre>
+</figure>
 
-{% endhighlight %}
+<details>
+<summary>Preview</summary>
 
-</details>
+<figure class="highlight">
+    <pre>
+        <code class="language-ruby" data-lang="ruby">
+        <span class="nb">puts</span> <span class="s1">'Expanded message'</span>
+        </code>
+    </pre>
+</figure>
+
+
+
+
 
 ### 6.11) Lifestage
 
