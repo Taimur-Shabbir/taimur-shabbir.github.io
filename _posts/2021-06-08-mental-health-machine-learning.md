@@ -1,12 +1,12 @@
 ---
-title: "Project: End-to-End Machine Learning Project - Using Machine Learning to improve Mental Health outcomes"
+title: "Python End-to-End Machine Learning Project: Using Machine Learning to Minimise Costs of Mental Health Initiatives in the Workplace"
 date: 2021-06-08
 tags: [Mental Health, Classification, Machine Learning, Feature Engineering]
 classes: wide
 toc: true
 toc_label: "Table of Contents"
 toc_icon: "cog"
-excerpt: "Minimising the Cost of Mental Health Initiatives in the Workplace Using Python"
+excerpt: "Predicting mental health developments in the workplace to more accurately calculate budgets for mental health initiatives"
 header:
   image: /assets/img/tim_mossholder.jpg
   caption: "Photo by [Tim Mossholder](https://unsplash.com/@timmossholder?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)"

@@ -1,5 +1,5 @@
 ---
-title: "Post: Data Cleaning Post - Police Stop and Search Incidents within selected areas in the UK in Python"
+title: "Python Data Cleaning Post: Police Stop and Search Incidents within selected areas in the UK in Python"
 date: 2020-04-07
 tags: [stop and search, police, UK police, data cleaning, data wrangling]
 classes: wide

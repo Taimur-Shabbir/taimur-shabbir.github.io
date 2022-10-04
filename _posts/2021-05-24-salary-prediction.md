@@ -1,5 +1,5 @@
 ---
-title: "Project: End-to-End Machine Learning Project - Informing Government Economic Policy via Salary Prediction using Python"
+title: "Python End-to-End Machine Learning Project: Improving Government Understanding of Labour Markets via Salary Prediction"
 date: 2021-05-24
 tags: [Data Visualisation, Machine Learning, Feature Engineering]
 classes: wide

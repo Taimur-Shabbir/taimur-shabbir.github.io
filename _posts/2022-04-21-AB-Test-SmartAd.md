@@ -1,5 +1,5 @@
 ---
-title: "Project: A/B Test - Testing whether a Smart Ad increases business response rates in Python "
+title: "A/B Testing Python Project: Testing whether a Smart Ad increases consumer response rates"
 date: 2022-04-21
 tags: [A/B Testing, Hypothesis Testing, Statistics]
 classes: wide

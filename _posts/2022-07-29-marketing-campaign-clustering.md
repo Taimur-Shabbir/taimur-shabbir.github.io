@@ -1,5 +1,5 @@
 ---
-title: "Project: Marketing Campaigns and Customer Clustering in Python"
+title: "Python Project: Evaluating Marketing Campaign and Performing Customer Clustering"
 date: 2022-07-29
 tags: [Customer Analytics, Marketing, Clustering]
 #header: ""

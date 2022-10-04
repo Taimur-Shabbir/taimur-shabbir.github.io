@@ -1,5 +1,5 @@
 ---
-title: "Project: End-to-End Machine Learning Project - Spotify Artist Success (Python)"
+title: "Python End-to-End Machine Learning Project: Spotify Artist Success (Python)"
 date: 2019-05-12
 tags: [spotify, artist success, streams, feature engineering, data wrangling, data science, machine learning]
 #header:

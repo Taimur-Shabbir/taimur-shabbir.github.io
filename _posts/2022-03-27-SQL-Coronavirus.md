@@ -1,5 +1,5 @@
 ---
-title: "Project: SQL and Tableau Project - Coronavirus"
+title: "SQL & Tableau Project: the Coronavirus Pandemic"
 date: 2022-03-27
 tags: [SQL, Database Management, Tableau, Data Visualisation]
 classes: wide

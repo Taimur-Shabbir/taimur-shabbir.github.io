@@ -1,5 +1,5 @@
 ---
-title: "Project: SQL & Tableau Project - Analysing Performance of an E-Commerce Business "
+title: "SQL & Tableau Project: - Analysing Performance of an E-Commerce Business "
 date: 2022-04-02
 tags: [SQL, Database Management, Tableau, Data Visualisation]
 classes: wide

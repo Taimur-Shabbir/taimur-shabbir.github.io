@@ -1,5 +1,5 @@
 ---
-title: "Post: Data Visualisation Post - The Ebb and Flow of A Battle Royale Game in Python"
+title: "Python Data Visualisation Post: The Ebb and Flow of A Battle Royale Game in Python"
 date: 2020-05-02
 tags: [Data Visualisation, videogames, strategy, visualisation]
 classes: wide

@@ -1,5 +1,5 @@
 ---
-title: "Group Project: End-to-End Machine Learning Project -  Forecasting Electrical Power Usage Using Time Series (Python)"
+title: "Python End-to-End Machine Learning Group Project: Forecasting Electrical Power Usage Using Time Series (Python)"
 date: 2019-03-06
 tags: [time series, ARIMA, naive forecast, autocorrelation, supervised learning]
 classes: wide

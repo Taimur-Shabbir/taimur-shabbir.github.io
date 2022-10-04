@@ -1,5 +1,5 @@
 ---
-title: "Ongoing Post: SQL Problems & Solutions to LeetCode and DataLemur Problems - 'Medium' & 'Hard' Difficulties"
+title: "SQL Ongoing Post: SQL Problems & Solutions to LeetCode and DataLemur Problems - 'Medium' & 'Hard' Difficulties"
 date: 2022-09-04
 tags: [SQL, PostgreSQL, MySQL]
 #header: ""

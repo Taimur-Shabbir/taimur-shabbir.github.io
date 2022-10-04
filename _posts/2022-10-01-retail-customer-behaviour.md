@@ -1,5 +1,5 @@
 ---
-title: "Project: Analysing Customer Purchasing Behaviour in Retail in Python"
+title: "Python Project: Analysing Customer Purchasing Behaviour in Retail"
 date: 2022-10-01
 tags: [Customer Analytics, Customer Behaviour, Retail]
 #header: ""
@@ -11,7 +11,7 @@ header:
   image: /assets/img/franki-chamaki.jpeg
   caption: "Photo by [Franki Chamaki](https://unsplash.com/@franki?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)"
 #image: blind.jpeg
-excerpt: "Excerpt goes here"
+excerpt: "Defining metrics to capture customer behaviour and understanding the drivers of spend for different segments"
 #mathjax: "true"
 ---
 
