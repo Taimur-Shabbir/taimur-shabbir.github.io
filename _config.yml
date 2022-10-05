@@ -284,9 +284,9 @@ compress_html:
   ignore:
     envs: development
 
-search: true # to enable site-wide search add search: true to your _config.yml.
-lunr:
-  search_within_pages: true # The default search uses Lunr to build a search index of all post
+#search: true # to enable site-wide search add search: true to your _config.yml.
+#lunr:
+#  search_within_pages: true # The default search uses Lunr to build a search index of all post
                             # and your documents in collections. This method is 100% compatible with sites hosted on
                             # GitHub Pages. To have it index all pages, update lunr in _config.yml
 
