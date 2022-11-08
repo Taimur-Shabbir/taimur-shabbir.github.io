@@ -6,4 +6,4 @@ author_profile: true
 ---
 
 
-Feel free to reach me at alitaimurshabbir@hotmail.com
+Feel free to reach me at taimur.shabbir.29@proton.me
