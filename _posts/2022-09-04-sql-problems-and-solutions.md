@@ -21,6 +21,49 @@ excerpt: "A live document where I showcase my solutions to Medium and Hard-ranke
 
 ## "Medium" Difficulty
 
+### [Repeat Purchases on Multiple Days](https://datalemur.com/questions/sql-repeat-purchases)
+
+The following is not the most elegant solution but I had to think about this problem for longer than usual and I eventually got the answer.
+
+The approach is to first find user_id and product_id combinations that occur over at least 2 different days. I accomplish this using COUNT(DISTINCT), GROUP BY CONCAT. I use CONCAT because the purchase_date column has both the date and a timestamp, so simply using COUNT(DISTINCT) will not necessarily capture different days as needed by the problem. It would capture values for the same day, just at different times.
+
+I use COUNT(DISTINCT) to then get only those user_id-product_id combinations which occur on at least 2 different days. Then it is a simple matter of wrapping these steps in a CTE and using COUNT(DISTINCT user_id) to find the number of users who made purchases on at least 2 different days.
+
+``` sql
+with t as(             -- begin CTE
+    SELECT
+        user_id,
+        product_id,
+        count(DISTINCT -- begin COUNT
+            concat(    -- begin CONCAT
+            extract(day from purchase_date),
+            extract(month from purchase_date),
+            extract(year from purchase_date)
+                  )    -- end CONCAT
+             )         -- end COUNT
+    FROM
+        purchases
+    GROUP BY
+        1, 2
+    HAVING
+        count(DISTINCT -- begin COUNT
+            concat(    -- begin CONCAT
+            extract(day from purchase_date),
+            extract(month from purchase_date),
+            extract(year from purchase_date)
+                  )    -- end CONCAT
+             ) > 1     -- end COUNT
+         )             --  end CTE
+
+SELECT
+    count(distinct user_id) as repeat_purchasers
+FROM
+    t
+
+
+```
+
+
 ### [First Transaction](https://datalemur.com/questions/sql-first-transaction)
 
 ``` sql
