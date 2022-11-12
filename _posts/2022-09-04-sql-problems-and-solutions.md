@@ -25,7 +25,7 @@ excerpt: "A live document where I showcase my solutions to Medium and Hard-ranke
 
 The following is not the most elegant solution but I had to think about this problem for longer than usual and I eventually got the answer.
 
-The approach is to first find user_id and product_id combinations that occur over at least 2 different days. I accomplish this using COUNT(DISTINCT), GROUP BY CONCAT. I use CONCAT because the purchase_date column has both the date and a timestamp, so simply using COUNT(DISTINCT) will not necessarily capture different days as needed by the problem. It would capture values for the same day, just at different times.
+The approach is to first find user_id and product_id combinations that occur over at least 2 different days. I accomplish this using COUNT(DISTINCT), GROUP BY CONCAT. I use CONCAT because the purchase_date column has both the date and a timestamp, so simply using COUNT(DISTINCT) will not necessarily only apture different days as needed by the problem. It would also capture values for the same day, just at different times.
 
 I use COUNT(DISTINCT) to then get only those user_id-product_id combinations which occur on at least 2 different days. Then it is a simple matter of wrapping these steps in a CTE and using COUNT(DISTINCT user_id) to find the number of users who made purchases on at least 2 different days.
 
@@ -53,7 +53,7 @@ with t as(             -- begin CTE
             extract(year from purchase_date)
                   )    -- end CONCAT
              ) > 1     -- end COUNT
-         )             --  end CTE
+         )             -- end CTE
 
 SELECT
     count(distinct user_id) as repeat_purchasers
