@@ -160,6 +160,8 @@ group by
 
 ### [Active User Retention](https://datalemur.com/questions/user-retention)
 
+The following shows my first solution which has more parts to it than necessary. After it we can see my second solution, which pares down the unnecessary parts of the query and makes it cleaer.
+
 The approach here is as follows. I need to use a self-join on the user_actions table so that I can compare, for the same user_id, whether or not the user_id had transactions in consecutive months. The question defines "active users" as those who have a required interaction type in both July and June, so I want to look for these users only.
 
 I will join using a compound key where a.user_id is equal to b.user_id and also the event_date of table alias b occurs after the event date of table alias b.
@@ -169,6 +171,8 @@ Next, I need to restrict this self join to only those cases where the difference
 After this is done, I wrap this query in a CTE. From this CTE, I find the COUNT of DISTINCT user_id values of those users whose second interaction occurred in July 2022; by necessity, this means their first interaction occurred in June 2022 due to the way our CTE is set up. This is exactly what we're looking for.
 
 ``` sql
+
+-- First solutions
 
 with t as(
 
@@ -201,7 +205,29 @@ GROUP BY
 
 ```
 
+A less wordy, cleaner solution
 
+``` sql
+
+
+    SELECT
+          extract(month from b.event_date) as month,
+          count(distinct a.user_id) as monthly_active_users
+    FROM
+          user_actions a
+    JOIN
+          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
+    WHERE
+
+          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
+          a.event_type in ('sign-in', 'like', 'comment') AND
+          b.event_type in ('sign-in', 'like', 'comment') AND
+          extract(month from b.event_date) = 7 AND
+          extract(year from b.event_date) = 2022
+    GROUP BY
+        1
+
+```
 
 ### [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
 
