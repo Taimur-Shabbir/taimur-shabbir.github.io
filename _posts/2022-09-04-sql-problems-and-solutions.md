@@ -11,7 +11,7 @@ header:
   image: /assets/img/brrr.png
   caption: ""
 #image: blind.jpeg
-excerpt: "A live document where I showcase my solutions to Medium and Hard-ranked SQL problems from LeetCode and DataLemur. "
+excerpt: "A live document where I demonstrate my solutions to Medium and Hard-ranked SQL problems from LeetCode and DataLemur. "
 #mathjax: "true"
 ---
 
@@ -20,6 +20,104 @@ excerpt: "A live document where I showcase my solutions to Medium and Hard-ranke
 # DataLemur
 
 ## "Medium" Difficulty
+
+
+### Uber - [Second Ride Delay](https://datalemur.com/questions/2nd-ride-delay)
+
+This question gave me more problems than usual and taught me about a crucial difference between rank() and row_number() which is obvious in hindsight. My approach here is as follows: find the order of trips per user_id dependent on the date. Isolate those user_id who booked a first ride on the same day as their registration ('in the moment' users). Find the difference between the 2nd ride date and the registration date for these latter users.
+
+I kept getting the wrong answer initially until I finally realised I was using rank(), when I should have been using row_number().
+
+If two values are equal (in this case, we are looking at ride dates), rank() will of course return the same value for both. However, row_number() will not; it will instead return the next value. For example, rank() will  return 1 and 1 for the same ride date but row_number() will return 1 and 2.
+
+This realisation finally enabled me to get the solution
+
+
+```SQL
+
+with ride_record as(
+
+    SELECT
+        u.user_id,
+        u.registration_date,
+        r.ride_date,
+        row_number() over (partition by u.user_id order by r.ride_date) as trip_no
+    FROM
+        users u
+    inner JOIN
+        rides r on u.user_id = r.user_id),
+
+    in_moment as(
+
+    select DISTINCT
+        ride_record.user_id
+    FROM
+        ride_record
+    WHERE
+        ride_record.registration_date = ride_record.ride_date)
+
+SELECT
+    ROUND(AVG(ride_date - registration_date),2) AS average_delay
+FROM
+    ride_record
+inner JOIN
+    in_moment on ride_record.user_id = in_moment.user_id
+WHERE
+    trip_no = 2
+```
+
+### [Top Drugs Sold](https://datalemur.com/questions/top-drugs-sold)
+
+```sql
+
+with t as
+    (SELECT
+        manufacturer,
+        drug,
+        rank() over(partition by manufacturer order by sum(units_sold) DESC)
+    FROM
+        pharmacy_sales
+    GROUP BY
+        1, 2)
+SELECT
+    t.manufacturer,
+    t.drug as top_drugs
+FROM
+    t
+WHERE
+    rank <= 2
+ORDER BY
+    t.manufacturer asc
+
+```
+
+
+### [Card Launch Success](https://datalemur.com/questions/card-launch-success)
+
+```sql
+
+with t as(
+
+    SELECT
+        card_name,
+        issued_amount,
+        rank() over (partition by card_name order by min(issue_year), min(issue_month))
+    FROM
+        monthly_cards_issued
+    group by
+        1, 2
+    ORDER BY
+        2 DESC)
+
+SELECT
+  card_name,
+  issued_amount
+FROM
+    t
+WHERE
+    rank = 1
+
+```
 
 ### [Repeat Purchases on Multiple Days](https://datalemur.com/questions/sql-repeat-purchases)
 
@@ -118,24 +216,29 @@ order by
 
 ``` sql
 
-select t.artist_name, t.rank as artist_rank
+with t as(
 
-from(
-select
-      a.artist_name,
-      dense_rank() over
-      (order by sum(case when c.rank <= 10 then 1 else 0 end) DESC) as rank
-from
-    artists a
-inner join
-      songs b on a.artist_id = b.artist_id
-inner join
-      global_song_rank c on b.song_id = c.song_id
-group by
-      1) t
+    SELECT
+        artist_name,
+        dense_rank() over (order by count(artist_name) DESC) as artist_rank
+    FROM
+        artists a
+    inner JOIN
+        songs s on a.artist_id = s.artist_id
+    inner JOIN
+        global_song_rank g on s.song_id = g.song_id
+    WHERE
+        g.rank <= 10
+    GROUP BY
+        1)
 
-where t.rank <= 5
-order by t.rank
+SELECT
+    artist_name,
+    artist_rank
+FROM
+    t
+WHERE
+    artist_rank <= 5
 
 ```
 
