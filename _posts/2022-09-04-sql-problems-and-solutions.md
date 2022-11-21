@@ -33,7 +33,7 @@ If two values are equal (in this case, we are looking at ride dates), rank() wil
 This realisation finally enabled me to get the solution
 
 
-```SQL
+```sql
 
 with ride_record as(
 
@@ -64,6 +64,7 @@ inner JOIN
     in_moment on ride_record.user_id = in_moment.user_id
 WHERE
     trip_no = 2
+
 ```
 
 ### [Top Drugs Sold](https://datalemur.com/questions/top-drugs-sold)
