@@ -22,6 +22,55 @@ excerpt: "A live document where I demonstrate my solutions to Medium and Hard-ra
 ## "Medium" Difficulty
 
 
+### Spotify - [Spotify Streaming History](https://datalemur.com/questions/spotify-streaming-history)
+
+The key here is to use UNION ALL instead of multiple CTEs
+
+```sql
+
+with t as(
+
+    (SELECT
+        user_id,
+        song_id,
+        count(song_id) as listens
+    FROM
+        songs_weekly
+    WHERE
+        extract(year from listen_time) <= 2022 and
+        extract(month from listen_time) <= 8 and
+        extract(day from listen_time) <= 4
+    GROUP BY
+        1, 2)
+
+    union all
+
+
+    (SELECT
+        user_id,
+        song_id,
+        sum(song_plays) as listens
+    FROM
+        songs_history
+    GROUP BY
+        1, 2)
+
+      )
+
+SELECT
+    user_id,
+    song_id ,
+    sum(listens) as song_plays
+FROM
+    t
+GROUP BY
+    1, 2
+ORDER BY
+    3 DESC
+
+```
+
+
 ### Uber - [Second Ride Delay](https://datalemur.com/questions/2nd-ride-delay)
 
 This question gave me more problems than usual and taught me about a crucial difference between rank() and row_number() which is obvious in hindsight. My approach here is as follows: find the order of trips per user_id dependent on the date. Isolate those user_id who booked a first ride on the same day as their registration ('in the moment' users). Find the difference between the 2nd ride date and the registration date for these latter users.
@@ -366,6 +415,117 @@ LEFT JOIN
 # LeetCode
 
 ## 'Medium' Difficulty
+
+### [1264. Page Recommendations](https://leetcode.com/problems/page-recommendations/description/)
+
+The key to solving this problem is to use a CASE statement to collect all the user_id of individuals who are friends of user_id = 1 in a CTE. All that is left to do is to join the Likes table on this CTE to find out what pages the friends of user_id = 1 like and filter out those pages that user_id = 1 already Likes
+
+```sql
+
+with rel as(
+
+    select
+        1 as user1,
+        case when user1_id = 1 then user2_id
+             when user2_id = 1 then user1_id end as user1_friends
+    from
+        Friendship
+)
+
+select distinct
+    l.page_id as recommended_page
+from
+    rel r
+inner join
+    likes l on r.user1_friends = l.user_id
+where
+    l.page_id not in (select page_id from Likes where user_id = 1)
+
+```
+
+### [1205. Monthly Transactions II](https://leetcode.com/problems/monthly-transactions-ii/description/)
+
+This is one of the tricker Medium-difficulty questions I've come across. The trickiness lay in the fact that we need to recognise that chargebacks for a given transaction may not occur in the same month in which the transaction itself occured.
+
+This means I needed to use UNION to collect all transactions (those that were approved, decline and charged back) and their months in a CTE, which I could then query to get the required result.
+
+Finally, the HAVING clause exists comply with the condition of the question which asks us to ignore rows where all of the latter 4 columns are 0
+
+
+``` sql
+
+with t1 as       
+        (select
+            id,
+            date_format(trans_date, '%Y-%m') as month,
+            country,
+            state as status,
+            amount
+        from
+            transactions
+
+        union
+
+        select
+           c.trans_id,
+           date_format(c.trans_date, '%Y-%m') as month,
+           t.country,
+           'chargeback' as status,
+           t.amount
+        from
+            chargebacks c
+        inner join
+            transactions t on c.trans_id = t.id
+        )
+
+select
+    t1.month,
+    t1.country,
+    ifnull(sum(case when status = 'approved' then 1 else 0 end), 0) as approved_count,
+    ifnull(sum(case when status = 'approved' then amount else 0 end), 0) as approved_amount,
+    ifnull(sum(case when status = 'chargeback' then 1 else 0 end), 0) as chargeback_count,
+    ifnull(sum(case when status = 'chargeback' then amount else 0 end), 0) as chargeback_amount
+from
+    t1
+group by
+    1, 2
+having
+    approved_count > 0 or
+    approved_amount > 0 or
+    chargeback_count > 0 or
+    chargeback_amount > 0
+
+```
+
+### [1107. New Users Daily Count](https://leetcode.com/problems/new-users-daily-count/description/)
+
+The key here was to use DATEDIFF in the HAVING clause of the subquery with min(activity_date) instead of in the WHERE clause of the subquery (which would give the wrong answer because we cannot use min() in the WHERE clause)
+
+``` sql
+
+select
+    t.login_date,
+    count(distinct t.user_id) as user_count
+from
+
+(select
+    user_id,
+    min(activity_date) as login_date
+from
+    Traffic
+where
+    activity = 'login'
+group by
+    1
+having
+    abs(datediff('2019-06-30', min(activity_date))) <= 90 ) t
+
+group by
+    1
+
+
+```
+
 
 ### [176. Second Highest Salary](https://leetcode.com/problems/second-highest-salary/)
 
