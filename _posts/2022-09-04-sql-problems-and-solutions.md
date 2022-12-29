@@ -21,6 +21,67 @@ excerpt: "A live document where I demonstrate my solutions to Medium and Hard-ra
 
 ## "Medium" Difficulty
 
+### Google - [Odd and Even Measurements](https://datalemur.com/questions/odd-even-measurements)
+
+
+The key here is to use the ROW_NUMBER() window function and to use day only (using EXTRACT()) in the PARTITION BY clause while using the entire datetime value (named measurement_time) in the ORDER BY clause
+
+```sql
+
+with t as(
+
+    SELECT
+        measurement_id,
+        measurement_value,
+        measurement_time,
+        row_number() over (partition by extract(day from measurement_time) order by measurement_time)
+    FROM
+        measurements)
+SELECT
+    measurement_time::date as measurement_day,
+    sum(case WHEN row_number % 2 != 0 then measurement_value else 0 end) as odd_sum,
+    sum(case when row_number % 2 = 0 then measurement_value else 0 end) as even_sum
+FROM
+    t
+GROUP BY
+    1
+ORDER BY
+    1
+
+```
+
+
+### UnitedHealth - [Patient Support Analysis (Part 4)](https://datalemur.com/questions/long-calls-growth)
+
+The key to solving this problem is to use the LAG() window function to compare the number of long calls in one month to that of the previous month and to cast the percentage calculation as a decimal to be able to get negative percentages
+
+```sql
+
+with t as(
+
+    SELECT
+        extract(year from call_received) as year,
+        extract(month from call_received) as month,
+        sum(case when call_duration_secs > 300 then 1 else 0 end) as lc,
+        lag( sum(case when call_duration_secs > 300 then 1 else 0 end), 1 )
+        OVER( order by extract(year from call_received), extract(month from call_received) ) as previous_lc
+
+    FROM
+        callers
+    GROUP BY
+        1, 2
+    ORDER BY
+        1, 2)
+
+
+SELECT
+    year,
+    month,
+    round(((lc-previous_lc)/previous_lc::decimal*100), 1)
+FROM
+    t
+```
+
 
 ### Spotify - [Spotify Streaming History](https://datalemur.com/questions/spotify-streaming-history)
 
@@ -415,6 +476,7 @@ LEFT JOIN
 # LeetCode
 
 ## 'Medium' Difficulty
+
 
 ### [1264. Page Recommendations](https://leetcode.com/problems/page-recommendations/description/)
 
