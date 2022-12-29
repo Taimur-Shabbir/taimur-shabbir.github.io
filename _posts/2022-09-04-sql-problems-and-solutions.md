@@ -177,7 +177,7 @@ WHERE
 
 ```
 
-### [Top Drugs Sold](https://datalemur.com/questions/top-drugs-sold)
+### CVS Health - [Pharmacy Analytics (Part 4)](https://datalemur.com/questions/top-drugs-sold)
 
 ```sql
 
@@ -203,7 +203,7 @@ ORDER BY
 ```
 
 
-### [Card Launch Success](https://datalemur.com/questions/card-launch-success)
+### JPMorgan Chase - [Card Launch Success](https://datalemur.com/questions/card-launch-success)
 
 ```sql
 
@@ -230,7 +230,7 @@ WHERE
 
 ```
 
-### [Repeat Purchases on Multiple Days](https://datalemur.com/questions/sql-repeat-purchases)
+### Stitch Fix - [Repeat Purchases on Multiple Days](https://datalemur.com/questions/sql-repeat-purchases)
 
 The following is not the most elegant solution but I had to think about this problem for longer than usual and I eventually got the answer.
 
@@ -273,7 +273,7 @@ FROM
 ```
 
 
-### [First Transaction](https://datalemur.com/questions/sql-first-transaction)
+### Etsy - [First Transaction](https://datalemur.com/questions/sql-first-transaction)
 
 ``` sql
 
@@ -293,7 +293,7 @@ where t.rank = 1 and t.spend >= 50
 
 ```
 
-### [Ad Campaign ROAS](https://datalemur.com/questions/ad-campaign-roas)
+### Google - [Ad Campaign ROAS](https://datalemur.com/questions/ad-campaign-roas)
 
 ``` sql
 
@@ -306,7 +306,7 @@ group by
 
 ```
 
-### [Average Review Ratings](https://datalemur.com/questions/sql-avg-review-ratings)
+### Amazon - [Average Review Ratings](https://datalemur.com/questions/sql-avg-review-ratings)
 
 ``` sql
 
@@ -323,7 +323,7 @@ order by
 
 ```
 
-### [Top 5 Artists](https://datalemur.com/questions/top-fans-rank)
+### Spotify - [Top 5 Artists](https://datalemur.com/questions/top-fans-rank)
 
 ``` sql
 
@@ -353,7 +353,7 @@ WHERE
 
 ```
 
-### [Consulting Bench Time](https://datalemur.com/questions/consulting-bench-time)
+### Google - [Consulting Bench Time](https://datalemur.com/questions/consulting-bench-time)
 
 ```  sql
 select
@@ -372,7 +372,7 @@ group by
 
 ## "Hard" Difficulty
 
-### [Active User Retention](https://datalemur.com/questions/user-retention)
+### Facebook - [Active User Retention](https://datalemur.com/questions/user-retention)
 
 The following shows my first solution which has more parts to it than necessary. After it we can see my second solution, which pares down the unnecessary parts of the query and makes it cleaer.
 
@@ -443,7 +443,7 @@ A less wordy, cleaner solution
 
 ```
 
-### [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
+### Wayfair - [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
 
 ``` sql
 
