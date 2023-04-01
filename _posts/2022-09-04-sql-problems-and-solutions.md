@@ -477,6 +477,57 @@ LEFT JOIN
 
 ## 'Medium' Difficulty
 
+### [1341. Movie Rating]('https://leetcode.com/problems/movie-rating/description/')
+
+Approach: Find the user with the most reviews using one query. Call this t1. Find the movie with the highest average rating in February 2020. Call this t2. These queries are simple enough.
+
+The difficulty lies in getting the required output (the username and movie title) without the extra information (count of user_name and average rating of movies, respectively) and in a single column.
+
+To accomplish this, we construct both t1 and t2 as subqueries and use UNION to get the required outputs in one column:
+
+```sql
+
+# Write your MySQL query statement below
+select
+    t1.name as results from
+
+        (select
+            u.name,
+            count(u.name)
+        from
+            movies m
+        inner join
+            MovieRating r on m.movie_id = r.movie_id
+        inner join
+            Users u on u.user_id = r.user_id
+        group by
+            1
+        order by
+            2 DESC, 1 ASC
+        limit
+            1) t1
+
+union
+
+select
+    t2.title as results from
+
+        (select
+            m.title,
+            avg(rating) as avg_rating
+        from
+            movies m
+        inner join
+            MovieRating r on m.movie_id = r.movie_id
+        where
+            year(created_at) = 2020 and month(created_at) = 2
+        group by
+            1
+        order by
+            2 DESC, 1 ASC
+        limit
+            1) t2
+```
 
 ### [1264. Page Recommendations](https://leetcode.com/problems/page-recommendations/description/)
 
@@ -507,7 +558,7 @@ where
 
 ### [1205. Monthly Transactions II](https://leetcode.com/problems/monthly-transactions-ii/description/)
 
-This is one of the tricker Medium-difficulty questions I've come across. The trickiness lay in the fact that we need to recognise that chargebacks for a given transaction may not occur in the same month in which the transaction itself occured.
+This is one of the tricker Medium-difficulty questions I've come across. The trickiness lay in the fact that we need to recognise that chargebacks for a given transaction may not occur in the same month in which the transaction itself occurred.
 
 This means I needed to use UNION to collect all transactions (those that were approved, decline and charged back) and their months in a CTE, which I could then query to get the required result.
 

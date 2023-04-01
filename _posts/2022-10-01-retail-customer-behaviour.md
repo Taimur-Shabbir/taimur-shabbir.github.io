@@ -751,37 +751,56 @@ And what proportion of the total customers do customers from the above segment m
 
 <details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+
+    # and what proportion of the total customers do customers from the above segments
+
+    from pywaffle import Waffle
+    
+    
     cust_count = []
     lifestages = list(set(merged_df.LIFESTAGE))
-
+    
     for i in lifestages:
         cust_count.append(merged_df[merged_df['LIFESTAGE'] == i]['LYLTY_CARD_NBR'].nunique())
-
+        
     cust_per_lifestage = pd.DataFrame({'Lifestage': lifestages,
                                        'num_customers':cust_count})
+    
+    
+    
+    value = {'New Families':2549, 'Young Families':9178,
+              'Midage Singles/Couples':7275, 'Retirees':14805,
+              'Older Families':9779, 'Young Singles/Couples':14441,
+              'Older Singles/Couples':14609}
+    
+    value = dict(sorted(value.items(), key=lambda x:x[1]))
+    
+    
+    
+    # Waffle chart
+    plt.figure(figsize = (12, 8),
+        FigureClass = Waffle,
+        rows = 10,
+        columns = 10,
+        values = value,
+        vertical = False,
+        facecolor = 'white',
+        icons = 'person-dress',
+        icon_legend = 'True',
+        #title = {'label':''}
+        legend = {
+                  'loc':'upper left',
+                  'bbox_to_anchor':(1, 1)})
+    
+    plt.suptitle('Young Singles/Couples, Retirees and Older Singles/Couples Account for 3 out of every 5 Customers', size = 16)
+    plt.title('Distribution of each segment of customers if there were only 100 customers', size = 12)
 
 
-    colors = ['#fbf8cc', '#fde4cf', '#f1c0e8',
-              '#cfbaf0', '#a3c4f3', '#8eecf5',
-              '#b9fbc0']
-
-
-    fig1, ax1 = plt.subplots(figsize = (9, 8))
-
-    ax1.pie(cust_per_lifestage['num_customers'], labels = cust_per_lifestage['Lifestage'],
-            autopct='%1.1f%%', shadow = False, startangle = 90,
-            textprops = {'fontsize':'12'}, colors = colors)
-
-
-    ax1.axis('equal')  
-    plt.title('Customers in Each Segment as Share of All Customers', size = 14)
-    plt.suptitle('Retirees and Older Singles/Couples Account for 2 Out of Every 5 Customers')
-    plt.show()
     {% endhighlight %} </span></code></pre></figure></details>
 
 
 
-<img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_33_0.png" alt="None">
+<img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/waffle.png" alt="None">
 
 
 
@@ -847,37 +866,42 @@ As we did with lifestage, let's check what proportion of customers belong to eac
 
 <details><summary>Code</summary><figure class="highlight">
     <pre><code data-lang="python"><span class="s1"> {% highlight python %}
+    
+    # as we did with lifestage, let's check what proportion of customers belong to each segment
+
+
     cust_count = []
     categories = list(set(merged_df.PREMIUM_CUSTOMER))
-
+    
     for i in categories:
         cust_count.append(merged_df[merged_df['PREMIUM_CUSTOMER'] == i]['LYLTY_CARD_NBR'].nunique())
-
+        
     cust_per_category = pd.DataFrame({'Category': categories,
                                        'num_customers':cust_count})
-
-
+    
+    cust_per_category.sort_values(by = 'num_customers', inplace = True)
+    
+    
     colors = ['#cdb4db', '#ffafcc', '#a2d2ff']
-
-
-    fig1, ax1 = plt.subplots(figsize = (9, 8))
-
-    ax1.pie(cust_per_category['num_customers'], labels = cust_per_category['Category'],
-            autopct='%1.1f%%', shadow = False, startangle = 90,
-            textprops = {'fontsize':'12'}, colors = colors)
-
-
-    ax1.axis('equal')  
-    plt.title('Customers in Each Segment as Share of All Customers', size = 14)
-    plt.suptitle('For every 60 customers, 16 are Premium, 24 are Mainstream and 20 are Budget')
+    
+    plt.figure(figsize = (12, 8))
+    plt.bar(cust_per_category.Category,
+            cust_per_category.num_customers,
+            color = colors,
+            alpha = 0.75)
+    
+    plt.title('Total Customers in each type of Category', size = 16)
+    plt.suptitle('Mainstream Customers are the largest segment while Premium Customers are the smallest segment', size = 18)
     #plt.tight_layout()
     plt.show()
+
+
     {% endhighlight %} </span></code></pre></figure></details>
 
 
 
 
-<img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/output_40_0.png" alt="None">
+<img src="{{ site.url }}{{ site.baseurl }}/images/retail-behaviour/inyourhead.png" alt="None">
 
 
 
