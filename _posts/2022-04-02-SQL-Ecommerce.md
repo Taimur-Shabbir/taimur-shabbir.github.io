@@ -92,16 +92,16 @@ Colorbuds, which are a type of earphones, were more profitable than the next two
 ~~~SQL
 
 select
-			a.product_category,
-			round(sum((a.product_price-a.product_cost)*b.units), 2) as total_profit
+      a.product_category,
+      round(sum((a.product_price-a.product_cost)*b.units), 2) as total_profit
 from
-			products a
+      products a
 inner join
-			sales_toys b using(Product_ID)
+      sales_toys b using(Product_ID)
 group by
-			a.product_category
+      a.product_category
 order by
-			total_profit desc
+      total_profit desc
 ~~~
 
 
@@ -110,12 +110,12 @@ order by
 
 ```SQL
 select
-			product_name, round(product_price-product_cost, 2) as margin,
-			case when (product_price-product_cost) > 5 then 'High Margin' else 'Low Margin' end as Status
+    product_name, round(product_price-product_cost, 2) as margin,
+    case when (product_price-product_cost) > 5 then 'High Margin' else 'Low Margin' end as Status
 from
-			products
+    products
 order by
-			margin desc
+    margin desc
 ```
 
 ### Q4) Are high margin products more profitable? Or are low margin products more profitable?
@@ -127,32 +127,28 @@ order by
 
 with cte1 as(
 
-
-
-
-
-select
-			a.product_name,
-		  round(sum((a.product_price-a.product_cost)*b.units), 2) as total_profit,
-	    max(round(a.product_price-a.product_cost, 2)) as margin
-from
-			products a
-inner join
-			sales_toys b using(Product_ID)
-group by
-			a.product_name
-order by
-			total_profit desc)
+    select
+          a.product_name,
+          round(sum((a.product_price-a.product_cost)*b.units), 2) as total_profit,
+          max(round(a.product_price-a.product_cost, 2)) as margin
+    from
+          products a
+    inner join
+          sales_toys b using(Product_ID)
+    group by
+          a.product_name
+    order by
+          total_profit desc)
 
 select
-			cte1.product_name,
-			cte1.total_profit,
-			cte1.margin, # get the results from above CTE and label each product as 'high' or 'low' margin
-      case when cte1.margin > 5 then 'High Margin' else 'Low Margin' end as Status
+    cte1.product_name,
+    cte1.total_profit,
+    cte1.margin, # get the results from above CTE and label each product as 'high' or 'low' margin
+    case when cte1.margin > 5 then 'High Margin' else 'Low Margin' end as Status
 from
-			cte1
+    cte1
 order by
-			total_profit DESC, margin desc
+    total_profit DESC, margin desc
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/margins_vs_profit.png" alt="None">
@@ -170,27 +166,26 @@ The date range of the data is 2017-01-01 to 2018-09-30. This means that all mont
 -- using the results of the derived table, find the average monthly revenue
 
 select
-		 tab1.Month,
-		 tab1.number_of_unique_sales,
-		 tab1.total_monthly_revenue,
-	   case when
-		 tab1.Month in(10, 11, 12) then tab1.total_monthly_revenue/1 else tab1.total_monthly_revenue/2 end as average_monthly_revenue
+     tab1.Month,
+     tab1.number_of_unique_sales,
+     tab1.total_monthly_revenue,
+     case when tab1.Month in(10, 11, 12) then tab1.total_monthly_revenue/1 else tab1.total_monthly_revenue/2 end as average_monthly_revenue
 from
 
 -- define the derived table which gets the number of unique sales and *total* monthly revenue
 
-(select
-			 month(a.date) as Month,
-			 count(distinct a.Sale_ID) as number_of_unique_sales,
-	   	 round(sum(a.units*b.product_price), 2) as total_monthly_revenue
-from
-			 sales_toys a
-inner join
-			 products b using(Product_ID)
-group by
-			 month(a.date)
-order by
-			 Month) tab1
+    (select
+           month(a.date) as Month,
+           count(distinct a.Sale_ID) as number_of_unique_sales,
+           round(sum(a.units*b.product_price), 2) as total_monthly_revenue
+    from
+           sales_toys a
+    inner join
+           products b using(Product_ID)
+    group by
+           month(a.date)
+    order by
+           Month) tab1
 
 ```
 
@@ -205,40 +200,40 @@ order by
 
 with w as(
 
-select
-			a.product_category,
-			round(sum(a.product_price*b.units), 2) as total_revenue
-from
-			products a inner join sales_toys b using(Product_ID)
-where
-			month(b.date) in(1, 2, 12)
-group by
-			a.product_category),
+    select
+          a.product_category,
+          round(sum(a.product_price*b.units), 2) as total_revenue
+    from
+          products a inner join sales_toys b using(Product_ID)
+    where
+          month(b.date) in(1, 2, 12)
+    group by
+          a.product_category),
 
 -- get revenue of summer months
 
 s as(
 
-select
-			a.product_category,
-			round(sum(a.product_price*b.units), 2) as total_revenue
-from
-			products a inner join sales_toys b using(Product_ID)
-where
-			month(b.date) in(6, 7, 8)
-group by
-			a.product_category)
+    select
+          a.product_category,
+          round(sum(a.product_price*b.units), 2) as total_revenue
+    from
+          products a inner join sales_toys b using(Product_ID)
+    where
+          month(b.date) in(6, 7, 8)
+    group by
+          a.product_category)
 
 -- collect the results of the above two CTEs, joining on product category
 
 select
-			w.product_category,
-			w.total_revenue as winter_revenue,
-			s.total_revenue as summer_revenue
+    w.product_category,
+    w.total_revenue as winter_revenue,
+    s.total_revenue as summer_revenue
 from
-			w
+    w
 inner join
-			s using(product_category)
+    s using(product_category)
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/winter_v_summer.png" alt="None">
@@ -249,18 +244,18 @@ inner join
 
 ```SQL
 select
-			s.Store_city,
-			round(sum(p.product_price*t.units), 2) as City_Revenue
+      s.Store_city,
+      round(sum(p.product_price*t.units), 2) as City_Revenue
 from
-			stores s
+      stores s
 inner join
-			sales_toys t on s.Store_ID = t.Store_ID
+      sales_toys t on s.Store_ID = t.Store_ID
 inner join
-			products p on p.Product_ID = t.Product_ID
+      products p on p.Product_ID = t.Product_ID
 group by
-			s.Store_City
+      s.Store_City
 order by
-			City_Revenue desc
+      City_Revenue desc
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/revenue_by_city.png" alt="None">
@@ -274,29 +269,29 @@ What we are asking is: are legacy stores providing the same level of success as 
 
 with cte2 as(
 
-select
-			s.Store_ID,
-			s.Store_Name,
-			round(sum(p.product_price*t.units), 2) as Store_Revenue
-from
-			stores s
-inner join
-			sales_toys t on s.Store_ID = t.Store_ID
-inner join
-			products p on p.Product_ID = t.Product_ID
-group by
-			s.Store_ID, s.Store_Name)
+      select
+            s.Store_ID,
+            s.Store_Name,
+            round(sum(p.product_price*t.units), 2) as Store_Revenue
+      from
+            stores s
+      inner join
+            sales_toys t on s.Store_ID = t.Store_ID
+      inner join
+            products p on p.Product_ID = t.Product_ID
+      group by
+            s.Store_ID, s.Store_Name)
 
 select
-			cte2.Store_name,
-			cte2.Store_Revenue,
-			case when year(s.store_open_date) <= 2004 then 'Legacy Store' else 'New Store' end as Age_Status
+      cte2.Store_name,
+      cte2.Store_Revenue,
+      case when year(s.store_open_date) <= 2004 then 'Legacy Store' else 'New Store' end as Age_Status
 from
-			cte2
+      cte2
 inner join
-			stores s using(Store_ID)
+      stores s using(Store_ID)
 order by
-			Store_Revenue DESC
+      Store_Revenue DESC
 
 ```
 
@@ -307,19 +302,19 @@ Top 5:
 ```SQL
 
 select
-			i.store_id,
-			s.store_name,
-			round(sum(i.Stock_On_Hand*p.product_price), 2) as total_inventory_value
+      i.store_id,
+      s.store_name,
+      round(sum(i.Stock_On_Hand*p.product_price), 2) as total_inventory_value
 from
-			inventory i
+      inventory i
 inner join
-			stores s on i.store_id = s.store_id
+      stores s on i.store_id = s.store_id
 inner join
-			products p on i.product_id = p.product_id
+      products p on i.product_id = p.product_id
 group by
-			i.store_id, s.store_name
+      i.store_id, s.store_name
 order by
-			total_inventory_value desc
+      total_inventory_value desc
 limit 5
 
 ```
@@ -329,19 +324,19 @@ Bottom 5:
 ```SQL
 
 select
-			i.store_id,
-			s.store_name,
-			round(sum(i.Stock_On_Hand*p.product_price), 2) as total_inventory_value
+      i.store_id,
+      s.store_name,
+      round(sum(i.Stock_On_Hand*p.product_price), 2) as total_inventory_value
 from
-			inventory i
+      inventory i
 inner join
-			stores s on i.store_id = s.store_id
+      stores s on i.store_id = s.store_id
 inner join
-			products p on i.product_id = p.product_id
+      products p on i.product_id = p.product_id
 group by
-			i.store_id, s.store_name
+      i.store_id, s.store_name
 order by
-			total_inventory_value asc
+      total_inventory_value asc
 limit 5
 ```
 
@@ -353,47 +348,47 @@ limit 5
 
 with inventory_value as(
 
-select
-			i.store_id,
-			s.store_name,
-			round(sum(i.Stock_On_Hand*p.product_price), 2) as total_inventory_value
-from
-		  inventory i
-inner join
-			stores s on i.store_id = s.store_id
-inner join
-			products p on i.product_id = p.product_id
-group by
-      i.store_id, s.store_name
-order by
-			total_inventory_value),
+      select
+            i.store_id,
+            s.store_name,
+            round(sum(i.Stock_On_Hand*p.product_price), 2) as total_inventory_value
+      from
+            inventory i
+      inner join
+            stores s on i.store_id = s.store_id
+      inner join
+            products p on i.product_id = p.product_id
+      group by
+            i.store_id, s.store_name
+      order by
+            total_inventory_value),
 
 -- get total revenue per store
 
 store_revenue as(
 
-select
-			s.store_name,
-			sum(p.product_price*t.units) as revenue
-from
-			products p
-inner join
-			sales_toys t on p.product_id = t.product_id
-inner join
-			stores s on t.store_id = s.store_id
-group by
-			s.store_name)
+      select
+            s.store_name,
+            sum(p.product_price*t.units) as revenue
+      from
+            products p
+      inner join
+            sales_toys t on p.product_id = t.product_id
+      inner join
+            stores s on t.store_id = s.store_id
+      group by
+            s.store_name)
 
 -- collect and return relevant results of above CTEs, joining on store_name
 
 select
-			inventory_value.store_name,
-			inventory_value.total_inventory_value,
-			store_revenue.revenue
+      inventory_value.store_name,
+      inventory_value.total_inventory_value,
+      store_revenue.revenue
 from
-			inventory_value
+      inventory_value
 inner join
-			store_revenue using(store_name)
+      store_revenue using(store_name)
 order by
-			store_revenue.revenue desc
+      store_revenue.revenue desc
 ```
