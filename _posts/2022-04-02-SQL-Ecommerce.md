@@ -441,7 +441,7 @@ with inventory_value as(
       group by
             i.store_id, s.store_name
       order by
-            total_inventory_value),
+            total_inventory_value),[2022-03-27-SQL-Coronavirus.md](2022-03-27-SQL-Coronavirus.md)
 
 -- get total revenue per store
 

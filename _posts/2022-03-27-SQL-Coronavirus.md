@@ -51,76 +51,108 @@ Here I'm going to
 
 -- add primary keys
 
-alter table deaths
+alter table
+    deaths
 add
-			id int not null auto_increment primary key first
+    id int not null auto_increment primary key first
 
-alter table vaccinations
-add id int not null auto_increment primary key first
+alter tablE
+    vaccinations
+add
+    id int not null auto_increment primary key first
 
 -- format 'date' column to correct format (yyyy-mm-dd) for both tables
 
-update deaths
-set date = date_format(str_to_date(date,'%d/%m/%Y'),'%Y-%m-%d')
-update vaccinations
-set date = date_format(str_to_date(date,'%d/%m/%Y'),'%Y-%m-%d')
+update
+    deaths
+set
+    date = date_format(str_to_date(date,'%d/%m/%Y'),'%Y-%m-%d')
+update
+    vaccinations
+set
+    date = date_format(str_to_date(date,'%d/%m/%Y'),'%Y-%m-%d')
 
 -- replace empty values in column 'total_deaths' in 'deaths' table with 0, then change data type to int
 
-update deaths
-set total_deaths = 0
-where total_deaths = ''  
+update
+    deaths
+set
+    total_deaths = 0
+where
+    total_deaths = ''  
 
-alter table deaths
-modify total_deaths int
+alter table
+    deaths
+modify
+    total_deaths int
 
 -- do the same as above for column 'new_deaths' in 'death' table
 
-update deaths set new_deaths = 0
-where new_deaths = ''
+update
+    deaths
+set
+    new_deaths = 0
+where
+    new_deaths = ''
 
-alter table deaths
-modify new_deaths int
+alter
+    table deaths
+modify
+    new_deaths int
 
 -- replace empty values for column 'continent' in 'death' table with NULL
 
-update deaths
-set continent = null
-where continent = ''
+update
+    deaths
+set
+    continent = null
+where
+    continent = ''
 
 -- replace empty values in continent in 'new_vaccinations' table with 0
 -- then change its data type to 'bigint'
 
-update vaccinations
-set new_vaccinations = 0
-where new_vaccinations = ''
+update 
+    vaccinations
+set 
+    new_vaccinations = 0
+where 
+    new_vaccinations = ''
 
-alter table vaccinations
-modify new_vaccinations bigint
+alter 
+    table vaccinations
+modify 
+    new_vaccinations bigint
 
 -- replace missing values with 0 for 'people_vaccinated' and 'people_fully_vaccinated' in 'vaccinations' table
 
-update vaccinations
-set people_vaccinated = 0
-where people_vaccinated = ''  
+update
+    vaccinations
+set
+    people_vaccinated = 0
+where
+    people_vaccinated = ''  
 
-update vaccinations
-set people_fully_vaccinated = 0
-where people_fully_vaccinated = ''  
+update
+    vaccinations
+set
+    people_fully_vaccinated = 0
+where
+    people_fully_vaccinated = ''  
 
 
 -- find the data which was not uploaded in 'deaths' table. This must be done because MySQL Workbench does not fully import the 'deaths' table
 
 select
-			a.location
+    a.location
 from
-			vaccinations a
+    vaccinations a
 left join
-			deaths b on a.id = b.id
+    deaths b on a.id = b.id
 where
-			b.id is null
+    b.id is null
 group by
-			a.location
+    a.location
 
 -- Data was not uploaded for every country from Urguguay (inclusive) onwards ordered
 -- alphabetically, until Zimbabwe (inclusive)
@@ -138,14 +170,14 @@ This query does not show the percentage of infected people at a given moment in 
 ~~~ SQL
 
 SELECT
-			location,
+      location,
       date,
       total_cases,
       (total_cases/population)*100 as '% of Cases'
 FROM
-			deaths
+      deaths
 WHERE
-			location = 'Germany'
+      location = 'Germany'
 
 ~~~
 
@@ -161,34 +193,34 @@ For visualisation purposes, I thought it would be more useful to show the global
 
 ``` SQL
 select
-			location,
+      location,
       date,
       total_cases,
       total_deaths,
       round(((total_deaths/total_cases)*100), 2) as 'Mortality Rate'
 from
-			deaths
+      deaths
 where
-			location = 'Germany'
+      location = 'Germany'
 order by
-			1, 2
+      1, 2
 ```
 
 ### Q3) What is the deadliest month on average in Germany?
 
 ``` SQL
 select
-			location,
+      location,
       month(date),
       round(avg((total_deaths/total_cases)*100), 2) as morality_percentage
 from
-			deaths
+      deaths
 where
-			location = 'Germany'
+      location = 'Germany'
 group by
-			location, month(date)
+      location, month(date)
 order by
-			morality_percentage DESC
+      morality_percentage DESC
 ```
 
 *Insight*: The data suggests that the summer months have the highest mortality rate. One possible interpretation of this is that people tend to be most social and outgoing in the summer to enjoy the weather. As more people visit public places, the likelihood of the virus transmitting is greater.
@@ -202,16 +234,17 @@ This data was obtained on 2022-03-18, so that is the date that will be considere
 
 ```SQL
 select
-			location,
+      location,
       date,
       (total_deaths/total_cases)*100 as Mortality_Rate
 from
-			deaths
+      deaths
 where
-			date = '2022-03-18'
+      date = '2022-03-18'
 order by
-			Mortality_Rate DESC
-limit 5
+      Mortality_Rate DESC
+limit
+      5
 ```
 
 # Part 2 - Continent and Global-level analysis
@@ -220,16 +253,16 @@ limit 5
 
 ```SQL
 select
-			location, max(total_deaths) as total_continent_deaths
+      location, max(total_deaths) as total_continent_deaths
 from
-			deaths
+      deaths
 where
-			continent is null and
+      continent is null and
       location not in('High income', 'European Union', 'Low income')
 group by
-			location
+      location
 order by
-			total_continent_deaths desc
+      total_continent_deaths desc
 ```
 
 
@@ -241,13 +274,13 @@ order by
 ~~~~SQL
 
 select
-			sum(new_cases) as total_cases_global,
+      sum(new_cases) as total_cases_global,
       sum(new_deaths) as total_deaths_global,
       (sum(new_deaths)/sum(new_cases))*100 as death_percentage
 from
-			deaths
+      deaths
 where
-			continent is null and
+      continent is null and
       location not in('European Union', 'High income', 'Low income')
 
 ~~~~
@@ -261,29 +294,29 @@ where
 with cte1 as(
 
      select
-     			a.continent,
+          a.continent,
           a.location,
           a.date,
           a.population,
           b.new_vaccinations,
           sum(b.new_vaccinations) OVER (Partition by a.location
           order by a.location, a.date) as vacc_so_far
-from
-			deaths a
-inner join
-			vaccinations b using(location, date)
-where
-			a.continent is not null)
+     from
+          deaths a
+     inner join
+          vaccinations b using(location, date)
+     where
+          a.continent is not null)
 
 select
-			location,
+      location,
       date,
       population,
       new_vaccinations,
       vacc_so_far,
       (vacc_so_far/population)*100 as percent_pop_vaccinated
 from
-			cte1
+      cte1
 ```
 
 Let's create a view so we can access these results easily next time
@@ -295,30 +328,30 @@ create view global_vaccination_rate as
 
 with cte1 as(
 
-select
-			a.continent,
-      a.location,
-      a.date,
-      a.population,
-	    b.new_vaccinations,
-      sum(b.new_vaccinations) OVER (Partition by a.location
-      order by a.location, a.date) as vacc_so_far
-from
-			deaths a
-inner join
-			vaccinations b using(location, date)
-where
-			a.continent is not null)
+      select
+            a.continent,
+            a.location,
+            a.date,
+            a.population,
+            b.new_vaccinations,
+            sum(b.new_vaccinations) OVER (Partition by a.location
+            order by a.location, a.date) as vacc_so_far
+      from
+            deaths a
+      inner join
+            vaccinations b using(location, date)
+      where
+            a.continent is not null)
 
 select
-			location,
+      location,
       date,
       population,
       new_vaccinations,
       vacc_so_far,
       (vacc_so_far/population)*100 as percent_pop_vaccinated
 from
-			cte1
+      cte1
 ```
 
 ### Q8) How have vaccination rates for countries changed over time?
@@ -327,18 +360,18 @@ from
 create view global_vaccination_rates1 as
 
 select
-			b.location,
+      b.location,
       a.population,
       b.date,
       max(b.people_vaccinated) as total_partial_vaccinations,
-	    max(b.people_fully_vaccinated) as total_full_vaccinations,
+      max(b.people_fully_vaccinated) as total_full_vaccinations,
       (max(b.people_fully_vaccinated)/a.population)*100 as percentage_fully_vaccinated
 from
-			deaths a
+      deaths a
 inner join
-			vaccinations b using(location, date)
+      vaccinations b using(location, date)
 group by
-			a.population, b.location, b.date
+      a.population, b.location, b.date
 ```
 
 For visualisation purposes, I have chosen only a few countries for clarity
@@ -350,16 +383,16 @@ For visualisation purposes, I have chosen only a few countries for clarity
 
 ```SQL
 select
-			location,
+      location,
       sum(total_cases) as total_cases,
       max(total_cases/population)*100 as '% of Cases',
       sum(icu_patients) as total_icu_patients
 from
-			deaths
+      deaths
 where
-			continent is not null
+      continent is not null
 group by
-			location
+      location
 order by
-			4 DESC
+      4 DESC
 ```
