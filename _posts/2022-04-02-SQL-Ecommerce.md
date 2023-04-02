@@ -196,49 +196,38 @@ low-margin products when it comes to promotion.
 
 ##  Q5) Is there a seasonality aspect to sales?
 
-The date range of the data is 2017-01-01 to 2018-09-30. This means that all months apart from October, November and December have two months worth of data (once for 2017 and once for 2018). To find the average revenue by month, we need to divide every month until September (inclusive) by 2 and we do *not* divide the last 3 months by 2
+The date range of the data is 2017-01-01 to 2018-09-30. This means that all months apart from October, November and December have two months worth of data (once for 2017 and once for 2018).
 
 
 ```SQL
 
--- using the results of the derived table, find the average monthly revenue
-
-select
-     tab1.Month,
-     tab1.number_of_unique_sales,
-     tab1.total_monthly_revenue,
-     case when tab1.Month in(10, 11, 12) then tab1.total_monthly_revenue/1 else tab1.total_monthly_revenue/2 end as average_monthly_revenue
+select DATE_FORMAT(a.date, '%Y-%m'),
+     round(sum(a.Units*b.product_price), 2) as total_monthly_revenue
 from
+     sales a 
+inner join 
+     products b on a.Product_ID = b.Product_ID
+group by 
+     DATE_FORMAT(a.date, '%Y-%m')
 
--- define the derived table which gets the number of unique sales and *total* monthly revenue
-
-    (select
-           month(a.date) as Month,
-           count(distinct a.Sale_ID) as number_of_unique_sales,
-           round(sum(a.units*b.product_price), 2) as total_monthly_revenue
-    from
-           sales_toys a
-    inner join
-           products b using(Product_ID)
-    group by
-           month(a.date)
-    order by
-           Month) tab1
 
 ```
 
-<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/revenue_by_month.png" alt="None">
+<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/revised_seasonality.png" alt="None">
 
 
 ### Interpretation & Takeaway
 
-As we can see, there is a sustained and considerable rise in Total and Average Monthly Revenue during the Spring and 
-Summer months (months 3 through 8). For the winter and autumn months, we see a lower sustained level of sales, apart 
-from a spike in December which is likely due to Christmas and New Year's Eve holidays
+As we can see, there is a general uptick in sales revenue for Maven Toys during the Spring months. Apart from a sharp rise
+in revenue in December, which can be attributed to Christmas and New Year's holidays, revenue is generally lower in the 
+Winter and Autumn months than in Spring. 
 
-Together, these observations do seem to indicate there is an element of seasonality involved. However, we still need to
+One possible recommendation here for Maven Toys is to introduce new products that are likely to sell better in Winter &
+Autumn. For example, toy versions of skis for children or snowman toys could prove to be popular during these times.
+
+Overall, these observations do seem to indicate there is an element of seasonality involved. However, we still need to
 be careful in making generalisations because we have less than 2 year of data. Our conclusions would be more valid if we
-had, say, 5 years' worth of data. But for now it seems that the spring and summer months are correlated with an uptick 
+had, say, 5 years' worth of data. But for now it seems that the spring months are correlated with an uptick 
 in sales for Maven Toys
 
 
