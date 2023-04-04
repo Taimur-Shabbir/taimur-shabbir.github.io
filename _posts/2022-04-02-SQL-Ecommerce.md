@@ -127,6 +127,7 @@ order by
       total_profit desc
 ~~~
 
+<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/most_profitable_ccategories.png" alt="None">
 
 ## Q3) What products are high margin and which ones are low margin?
 
@@ -140,6 +141,8 @@ from
 order by
     margin desc
 ```
+
+<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/high_v_low_margin.png" alt="None">
 
 ## Q4) Are high margin products more profitable? Or are low margin products more profitable?
 
@@ -363,6 +366,8 @@ order by
       Store_Revenue DESC
 
 ```
+
+<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/revenue_by_store_type.png" alt="None">
 
 ## Q9) How much money is tied up in each store in the form of stock? Top 5 vs Bottom 5
 
