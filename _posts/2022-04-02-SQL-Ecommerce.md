@@ -129,6 +129,17 @@ order by
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/most_profitable_ccategories.png" alt="None">
 
+### Interpretation & Takeaway
+
+Toys and Electronics are the best-performing categories when it comes to total profit, accounting for nearly 52% of all
+profit. The two products (not product categories) that generated the greatest amount of profit belong to these 2 product
+categories (Colorbuds = Electronics & Action Figure = Toys)
+
+Sports & Outdoors generated just over half a million dollars in revenue. Combined with the findings in Query 5, we see 
+that there could be an opportunity to focus on manufacturing new Sports & Outdoors products that take sell better in 
+Winter. This could be something as simple as skis & snowboards for children. I believe Maven Toys has 
+a good opportunity here.
+
 ## Q3) What products are high margin and which ones are low margin?
 
 
@@ -143,6 +154,16 @@ order by
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/high_v_low_margin.png" alt="None">
+
+### Interpretation & Takeaway
+
+Products are split into high and low margins nearly evenly. 
+
+The criteria of a high margin product is that the selling price is at least $6 greater than the cost price. I chose this
+figure based on the distribution of margins across all products, but it is still fairly arbitrary.
+
+Interestingly, only 2 products from the 5 most profitable products list (Colorbuds & Action Figures) are high-margin, so
+let's explore the relationship (if any exists) between the size of product margin and profitability
 
 ## Q4) Are high margin products more profitable? Or are low margin products more profitable?
 
@@ -185,9 +206,6 @@ order by
 We see that top 2 most profitable products, Colorbuds and Action Figures, are considered to be high-margin products
 while the next 3 most profitable products are low margin.
 
-The criteria of a high margin product is that the selling price is at least $6 greater than the cost price. I chose this
-figure based on the distribution of margins across all products, but it is still fairly arbitrary.
-
 The graph shows us that beyond these first 2 products, there seems to be little to no correlation between profit and 
 whether or not the product is low- or high-margin. It may be the case that there is an addition factor, beyond the fact
 that they are high-margin products, that may be influencing why Colorbuds and Action Figures are so profitable.
@@ -225,8 +243,8 @@ As we can see, there is a general uptick in sales revenue for Maven Toys during 
 in revenue in December, which can be attributed to Christmas and New Year's holidays, revenue is generally lower in the 
 Winter and Autumn months than in Spring. 
 
-One possible recommendation here for Maven Toys is to introduce new products that are likely to sell better in Winter &
-Autumn. For example, toy versions of skis for children or snowman toys could prove to be popular during these times.
+As before, one possible recommendation here for Maven Toys is to introduce new products that are likely to sell better in Winter &
+Autumn. For example, snowman toys or specialised headphones that can be worn during Winter sports (such as skiiing) could prove to be popular during these times.
 
 Overall, these observations do seem to indicate there is an element of seasonality involved. However, we still need to
 be careful in making generalisations because we have less than 2 year of data. Our conclusions would be more valid if we
@@ -335,7 +353,8 @@ them.
 
 ## Q8) Are older (legacy) stores able to incorporate ecommerce technology well?
 
-What we are asking is: are legacy stores providing the same level of success as newer stores? The earliest store opening is in 1992 and the latest is in 2016. Let's consider 2004 which is halfway between the two dates as the cutoff point.
+What we are asking is: are legacy stores providing the same level of success as newer stores? The earliest store opening
+is in 1992 and the latest is in 2016. Let's consider 2004 which is halfway between the two dates as the cutoff point.
 
 ```SQL
 
@@ -368,6 +387,20 @@ order by
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/revenue_by_store_type.png" alt="None">
+
+### Interpretation & Takeaway
+
+At first glance it seems New Stores overwhelmingly outperform Legacy Stores. However, this conclusion is incorrect because
+when we account for the total number of stores belonging to each type (there are far fewer Legacy stores compared to New stores),
+we find that Legacy stores actually outperform their newer counterparts on average. However, this difference is quite small,
+only about $11,000.
+
+One interpretation of this is that Legacy stores have incorporated e-commerce technology quite well. Moreover, these 
+stores are more established because they are older. This may contribute to the reasons why they perform better on average.
+Perhaps customers have a long-standing relationship with these older stores and more people are aware of their existence
+compared to newer stores. This in turn promotes more online orders and footfall.
+
+Regardless, Maven Toys is doing a good job of updating its older stores.
 
 ## Q9) How much money is tied up in each store in the form of stock? Top 5 vs Bottom 5
 
