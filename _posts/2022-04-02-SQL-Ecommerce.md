@@ -41,7 +41,6 @@ The queries are in 3 parts:
 
 A short summary of this project, including information on the data tables, columns, data types and data source can be found in a GitHub repository [README](https://github.com/Taimur-Shabbir/SQL-Ecommerce-Analysis) file.
 
-There is also a [dashboard](https://public.tableau.com/app/profile/taimur.shabbir/viz/E-CommerceInProgress/Dashboard1) visualising some of the queries that are present below. But all of the visualisations in the dashboard can also be found below, attached to the relevant query.
 
 # Part 1 - Data Cleaning
 
@@ -96,7 +95,7 @@ profitable product, nearly 62% of all profit is accounted for.
 It may be tempting to recommend that Maven Toys should consider focusing on these two products in marketing campaigns,
 for example, at the expense of other products. However, without further information, we cannot make this recommendation.
 
-For example, it may be the case that one or more of the other 3 products serves as a loss leader. Loss leaders, as we
+For example, it may be the case that one or more of the other products serves as a loss leader. Loss leaders, as we
 know, are products that are intentionally sold at a lower price point, sometimes even below cost price, in order to attract
 customers to the company. The company can sell cross-sell other, higher-priced/more profitable products to the same
 customers as a result. 
@@ -107,7 +106,7 @@ Marbles serves as a loss leader. Completely neglecting one of these in favour of
 in lower overall profits.
 
 In conclusion, if the company has knowingly placed one of these products as a loss leader then ceasing its promotion is
-not advisable. Conversely, if this is not the case, then the company may run an A/B test online with an ad campaign to
+not advisable. Conversely, if this is not the case, then the company may run an A/B test online to
 verify whether further promoting Colorbuds or Action Figures leads to an increase in overall profit
 
 ## Q2) What product category is the most profitable overall?
@@ -135,10 +134,20 @@ Toys and Electronics are the best-performing categories when it comes to total p
 profit. The two products (not product categories) that generated the greatest amount of profit belong to these 2 product
 categories (Colorbuds = Electronics & Action Figure = Toys)
 
-Sports & Outdoors generated just over half a million dollars in revenue. Combined with the findings in Query 5, we see 
-that there could be an opportunity to focus on manufacturing new Sports & Outdoors products that take sell better in 
-Winter. This could be something as simple as skis & snowboards for children. I believe Maven Toys has 
-a good opportunity here.
+Sports & Outdoors generated just over half a million dollars in revenue, being the least profitable category. 
+Combined with the findings in Query 5, we see that there could be an opportunity to focus on manufacturing new Sports &
+Outdoors products that take sell better in Winter. This could be something as simple as skis & snowboards for children.
+
+## Q3.5) Do Toys and Electronics generate the most profit across all stores, or do certain categories generate more profit depending on the store?
+
+<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/prd.png" alt="None">
+
+We see that Electronics and Toys are consistently responsible for generating the largest proportion of profit per store.
+There are only a few exceptions to this, such as in the store named "Maven Toys Morelia 1", where Games dominate and generate
+almost 40% of the profit for the store.
+
+For Maven Toys it may be exploring adding more items under the Electronics and Toys categories to give customers more choice
+and take full advantage of the popularity of these categories
 
 ## Q3) What products are high margin and which ones are low margin?
 
@@ -206,12 +215,32 @@ order by
 We see that top 2 most profitable products, Colorbuds and Action Figures, are considered to be high-margin products
 while the next 3 most profitable products are low margin.
 
-The graph shows us that beyond these first 2 products, there seems to be little to no correlation between profit and 
-whether or not the product is low- or high-margin. It may be the case that there is an addition factor, beyond the fact
-that they are high-margin products, that may be influencing why Colorbuds and Action Figures are so profitable.
+The graph shows us that beyond these first 2 products, there seems to be little to no correlation on a per-product basis
+between profit and whether or not the product is low- or high-margin. It may be the case that there is an additional 
+factor, beyond the fact that they are high-margin products, that may be influencing why Colorbuds and Action Figures 
+are so profitable.
 
-For now, I do not recommend changing the price points for any of the products or differentiating between high- and
-low-margin products when it comes to promotion.
+What I want to do now is compare the total, average profit and average units sold per sale across high-margin products and 
+compare those with the same calculations for low-margin products. Just to make it a little more objective, I am going 
+to exclude "Colorbuds" in this visualisation, because it is a clear outlier:
+
+<img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/profit_margins.png" alt="None">
+
+While low-margin products make significantly more total profit overall, high-margin products generate more profit on 
+average, on a per sale basis, even when we exclude 'Colorbuds' from the calculation
+
+This may seem like an obvious conclusion; if high-margin products have a greater difference between sale and cost 
+price (as is their very definition), then of course they generate more profit per sale on average. However, price is 
+inversely correlated with quantity demanded from the point of view of customers. And of course, profit equals (price-cost)*quantity,
+so quantity sold per sale matters.
+
+According to economic theory, customers should be buying proportionally more low-margin goods per sale, but we see that
+this isn't the case. Lower-margin products sell only 0.16 units more per sale than high-margin products on average.
+
+Overall, this suggests that higher-margin products are inherently more attractive to customers and they are inherently
+more profitable on average. This suggests that for Maven Toys, it is worth exploring whether they can sell additional
+high-margin products, provided that customer demand and market research also back this decision up.
+
 
 # Part 3 - Seasonality
 
@@ -243,11 +272,12 @@ As we can see, there is a general uptick in sales revenue for Maven Toys during 
 in revenue in December, which can be attributed to Christmas and New Year's holidays, revenue is generally lower in the 
 Winter and Autumn months than in Spring. 
 
-As before, one possible recommendation here for Maven Toys is to introduce new products that are likely to sell better in Winter &
-Autumn. For example, snowman toys or specialised headphones that can be worn during Winter sports (such as skiiing) could prove to be popular during these times.
+As before, one possible recommendation here for Maven Toys is to introduce new products that are likely to sell better in 
+Spring & Winter (specifically to take advantage of the peak during the last week of the year). For example, specialised 
+headphones that can be worn during Winter sports (such as skiiing) could prove to be popular during Winter.
 
 Overall, these observations do seem to indicate there is an element of seasonality involved. However, we still need to
-be careful in making generalisations because we have less than 2 year of data. Our conclusions would be more valid if we
+be careful in making generalisations because we have less than 2 years of data. Our conclusions would be more valid if we
 had, say, 5 years' worth of data. But for now it seems that the spring months are correlated with an uptick 
 in sales for Maven Toys
 
@@ -309,9 +339,12 @@ Toys and Sports & Outdoors have the biggest differences in sales between Summer 
 given most people's inclination towards outdoor activities when the whether is warmer. In Summer, Toys sales are
 24% greater than in Winter. This figure is about 54% for Sports & Outdoors
 
-Electronics sales are nearly the same in Winter as in Summer, with Summer sales slightly higher
+Electronics sales are nearly the same in Winter as in Summer, with Summer sales slightly higher while Games sales are 
+nearly 12% higher in Winter than in Summer
 
-Finally, Games sales are nearly 12% higher in Winter than in Summer
+Considering all of this, perhaps it is worthwhile considering promoting categories such as Toys and Sports & Outdoors 
+more in the Summer in marketing campaigns, while doing the same for Games during Winter months. This may allow Maven Toys
+to take advantage of the higher demand for these categories during the appropriate months
 
 # Part 4 - City-level and Stock analysis
 
@@ -344,17 +377,22 @@ by population, we can see that the largest cities in population terms are associ
 Again, this is not a surprising finding as a large population means more potential customers. Larger cities also tend to
 be more urban and richer on average, so this may also have an influence.
 
-What's more interesting is that all the other cities in which Maven Toys has a presence are not counted among the 30 
-largest cities by population. What this could imply is that Maven Toys may consider opening a branch in a city with among
-the largest populations in Mexico, such as Tijuana or Leon, since population size and sales seem to be correlated for
+What's more interesting is that all cities other than Mexico City, Guadalajara and Monterrey in which Maven Toys has a 
+presence are not counted among the 30 largest cities by population. What this could imply is that Maven Toys may 
+consider opening a branch in a city with among the largest populations in Mexico, such as Tijuana or Leon, since population size and sales seem to be correlated for
 them. 
+
+For example, Tijuana has approximately 1.8 million people and Leon 1.6 million people. For comparison, Hermosillo, where
+Maven Toys sold $903,389 worth of goods, has approximately 900,000 people. So there could be a case made to expand to a
+larger city with potentially a larger customer base.
 
 
 
 ## Q8) Are older (legacy) stores able to incorporate ecommerce technology well?
 
-What we are asking is: are legacy stores providing the same level of success as newer stores? The earliest store opening
-is in 1992 and the latest is in 2016. Let's consider 2004 which is halfway between the two dates as the cutoff point.
+What we are asking is: are legacy stores providing the same level of success as newer stores, as measured by profit? 
+The earliest store opening is in 1992 and the latest is in 2016. Let's consider 2004 which is halfway between the two 
+dates as the cutoff point which decides whether a store is considered 'New' or 'Legacy'
 
 ```SQL
 
@@ -400,7 +438,7 @@ stores are more established because they are older. This may contribute to the r
 Perhaps customers have a long-standing relationship with these older stores and more people are aware of their existence
 compared to newer stores. This in turn promotes more online orders and footfall.
 
-Regardless, Maven Toys is doing a good job of updating its older stores.
+Regardless, it seems as though Maven Toys is doing a good job of updating its older stores.
 
 ## Q9) How much money is tied up in each store in the form of stock? Top 5 vs Bottom 5
 
@@ -448,6 +486,18 @@ limit 5
 ```
 
 ## Q10) Is there any relationship between value of stock tied up and revenue by store?
+
+Keeping a large amount of inventory is generally considered to be undesirable for a few different factors. For example,
+more inventory requires more storage, which increases costs. If customer tastes change, existing inventory is in danger
+of becoming obsolete.
+
+Keeping this in mind, I wanted to see if the value tied up in inventory has any relationship with store revenue. Financial
+theory tells us that a high revenue-to-inventory ratio suggests the company is selling its inventory quickly and efficiently,
+while a low ratio suggests that the company is struggling to sell its inventory.
+
+Here I compare two ranked measures for each store. The first is the revenue-to-inventory ratio, where the 1st ranked 
+store has the highest, and therefore 'best', revenue-to-inventory ratio. The second is revenue itself. Again, the store
+ranked 1st here has the highest revenue.
 
 ```SQL
 
@@ -505,9 +555,10 @@ order by
 
 ### Interpretation & Takeaway
 
-There seems to be no clear correlation between the value of inventory in stock and revenue. Normally we can expect to see
-lower revenue when value of inventory is stock is high. Moreover, high levels of stock are seen as a business cost and are 
-generally undesirable for a business. However, that correlation does not seem to hold here.
+Having a 'good' revenue-to-sales ratio does not imply that a store has high revenue. The store with the highest revenue,
+Maven Toys Ciudad de Mexico 2, is ranked 44 out of 50 when it comes to revenue-to-inventory ratio, a clear mismatch. The 
+story is similar for the top 20 stores ranked by revenue. 14th-placed (by revenue) Maven Toys Guanajuato 1 is ranked the 
+best (#1) for revenue-to-inventory ratio.
 
-Value of inventory in stock for most stores ranges between $6,000 and $7,000, but Revenues for those same stores range
-between $200,000 and $440,000.
+Therefore, this seems to suggest that just because a store has a large amount of inventory tied up, does not mean that its
+sales are suffering
