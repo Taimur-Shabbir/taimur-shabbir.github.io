@@ -15,16 +15,16 @@ header:
 
 
 
-## Note: This project displays the following SQL skills:
+## Note: This project displays the following SQL & Tableau skills:
 
-- Filtering data
+- Filtering 
 - Joins
 - Grouping and Aggregation
 - CTEs
 - Derived tables
 - Subqueries
 - Views
-
+- LODS (Level of Detail Expressions)
 
 
 # Introduction
@@ -89,8 +89,10 @@ Colorbuds, which are a type of earphones, were more profitable than the next two
 
 ### Interpretation & Takeaway
 
-Colorbuds account for 43% of all profit, which is very significant. If combined with Action Figures, the second highest
-profitable product, nearly 62% of all profit is accounted for.
+Among the 5 most profitable products, Colorbuds account for 43% of all profit, a significant amount. If combined with 
+Action Figures, the second highest profitable product, nearly 62% of profit is accounted for.
+
+If compared to total profit across all products, Colorbuds are responsible for just over 20% of this figure.
 
 It may be tempting to recommend that Maven Toys should consider focusing on these two products in marketing campaigns,
 for example, at the expense of other products. However, without further information, we cannot make this recommendation.
@@ -140,13 +142,22 @@ Outdoors products that take sell better in Winter. This could be something as si
 
 ## Q3.5) Do Toys and Electronics generate the most profit across all stores, or do certain categories generate more profit depending on the store?
 
+To visualise this, we need to write a Level of Detail Expression (LOD) because the data is at a per-sale level while
+the visualisation we require is at a per-store and per-category level. I need to find the proportion of profit each
+product category is responsible for per-store, not across all stores
+
+``` 
+{fixed [Store Name], [Product Category]: sum([Profit])} / { fixed [Store Name] : sum([Profit])}
+
+```
+
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/prd.png" alt="None">
 
 We see that Electronics and Toys are consistently responsible for generating the largest proportion of profit per store.
 There are only a few exceptions to this, such as in the store named "Maven Toys Morelia 1", where Games dominate and generate
 almost 40% of the profit for the store.
 
-For Maven Toys it may be exploring adding more items under the Electronics and Toys categories to give customers more choice
+For Maven Toys it may be exploring adding more items under the Electronics and Toys categories to give customers even more choice
 and take full advantage of the popularity of these categories
 
 ## Q3) What products are high margin and which ones are low margin?

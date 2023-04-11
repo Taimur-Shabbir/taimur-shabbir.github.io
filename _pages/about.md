@@ -20,4 +20,4 @@ My data analyst experience is in the consumer goods (at Coca Cola European Partn
 
 Outside of work, my interests include training, reading (sci-fi, fantasy and horror + non-fiction), cycling and video games. I also consider myself somewhat of a film connoisseur.
 
-I'm actively looking for data roles in Berlin so please feel free to explore my portfolio and reach out with any questions or comments.
+I'm based in London and actively looking for data roles here so please feel free to explore my portfolio and reach out with any questions or comments.
