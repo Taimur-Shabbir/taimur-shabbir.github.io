@@ -26,6 +26,7 @@ header:
 - Views
 - LODS (Level of Detail Expressions)
 
+A dashboard can be found [here](https://github.com/Taimur-Shabbir/SQL-Ecommerce-Analysis/blob/main/Maven%20Toys%20Dashboard.png)
 
 # Introduction
 
