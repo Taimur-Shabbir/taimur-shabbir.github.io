@@ -47,7 +47,7 @@ A short summary of this project, including information on the data tables, colum
 
 Here I'm going to remove the dollar sign '$' in the 'product_cost' and 'product_price' columns, then change type to 'double'. This is done so that we can perform calculations with the data in these columns.
 
-~~~~SQL
+```sql
 
 update products
 set product_cost = replace(product_cost, '$','')
@@ -61,13 +61,13 @@ modify product_cost double
 alter table products
 modify product_price double
 
-~~~~
+```
 
 # Part 2 - Products and Profitability
 
 ##  Q1) Which 5 products have generated the most profit?
 
-```SQL
+```sql
 
 select
       a.product_name,
@@ -114,7 +114,7 @@ verify whether further promoting Colorbuds or Action Figures leads to an increas
 
 ## Q2) What product category is the most profitable overall?
 
-~~~SQL
+```sql
 
 select
       a.product_category,
@@ -127,7 +127,7 @@ group by
       a.product_category
 order by
       total_profit desc
-~~~
+```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/most_profitable_ccategories.png" alt="None">
 
@@ -164,7 +164,7 @@ and take full advantage of the popularity of these categories
 ## Q3) What products are high margin and which ones are low margin?
 
 
-```SQL
+```sql
 select
     product_name, round(product_price-product_cost, 2) as margin,
     case when (product_price-product_cost) > 5 then 'High Margin' else 'Low Margin' end as Status
@@ -172,6 +172,7 @@ from
     products
 order by
     margin desc
+    
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/high_v_low_margin.png" alt="None">
@@ -189,7 +190,7 @@ let's explore the relationship (if any exists) between the size of product margi
 ## Q4) Are high margin products more profitable? Or are low margin products more profitable?
 
 
-```SQL
+```sql
 
 -- find the total profit and margin for each product
 
@@ -217,6 +218,7 @@ from
     cte1
 order by
     total_profit DESC, margin desc
+
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/margins_vs_profit.png" alt="None">
@@ -261,7 +263,7 @@ high-margin products, provided that customer demand and market research also bac
 The date range of the data is 2017-01-01 to 2018-09-30. This means that all months apart from October, November and December have two months worth of data (once for 2017 and once for 2018).
 
 
-```SQL
+```sql
 
 select DATE_FORMAT(a.date, '%Y-%m'),
      round(sum(a.Units*b.product_price), 2) as total_monthly_revenue
@@ -271,7 +273,6 @@ inner join
      products b on a.Product_ID = b.Product_ID
 group by 
      DATE_FORMAT(a.date, '%Y-%m')
-
 
 ```
 
@@ -296,7 +297,7 @@ in sales for Maven Toys
 
 ## Q6) Is there a difference in product category popularity between Summer and Winter months?
 
-```SQL
+```sql
 
 -- get revenue of winter months
 
@@ -336,6 +337,7 @@ from
     w
 inner join
     s using(product_category)
+
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/winter_v_summer.png" alt="None">
@@ -362,7 +364,8 @@ to take advantage of the higher demand for these categories during the appropria
 
 ## Q7) What cities generate the most revenue?
 
-```SQL
+```sql
+
 select
       s.Store_city,
       round(sum(p.product_price*t.units), 2) as City_Revenue
@@ -376,6 +379,7 @@ group by
       s.Store_City
 order by
       City_Revenue desc
+      
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/revenue_by_city.png" alt="None">
@@ -406,7 +410,7 @@ What we are asking is: are legacy stores providing the same level of success as 
 The earliest store opening is in 1992 and the latest is in 2016. Let's consider 2004 which is halfway between the two 
 dates as the cutoff point which decides whether a store is considered 'New' or 'Legacy'
 
-```SQL
+```sql
 
 with cte2 as(
 
@@ -456,7 +460,7 @@ Regardless, it seems as though Maven Toys is doing a good job of updating its ol
 
 Top 5:
 
-```SQL
+```sql
 
 select
       i.store_id,
@@ -474,11 +478,12 @@ order by
       total_inventory_value desc
 limit 5
 
+
 ```
 
 Bottom 5:
 
-```SQL
+```sql
 
 select
       i.store_id,
@@ -495,6 +500,7 @@ group by
 order by
       total_inventory_value asc
 limit 5
+
 ```
 
 ## Q10) Is there any relationship between value of stock tied up and revenue by store?
@@ -511,7 +517,7 @@ Here I compare two ranked measures for each store. The first is the revenue-to-i
 store has the highest, and therefore 'best', revenue-to-inventory ratio. The second is revenue itself. Again, the store
 ranked 1st here has the highest revenue.
 
-```SQL
+```sql
 
 -- get inventory value per store
 
@@ -560,6 +566,7 @@ inner join
       store_revenue using(store_name)
 order by
       store_revenue.revenue desc
+
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/ecommerceImages/Inventory_Value_vs_Sales.png" alt="None">
