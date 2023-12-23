@@ -20,6 +20,7 @@ My data journey has involved quite an eclectic mix of industries. I have experie
 
 Before I got into data, my intention was to join a management consulting firm. To that end, I also have non-data oriented experience in consulting and financial services through various internships, across the United Kingdom (London), United Arab Emirates (Dubai) and Pakistan
 
-Outside of work, my interests include hypertrophy training, reading (sci-fi, fantasy and horror + non-fiction), cycling and fighting video games (I'm a Ken player in Street Fighter 6 and Johnny Cage veteran in Mortal Kombat). I also consider myself somewhat of a film connoisseur.
+Outside of work, my interests include hypertrophy training, reading (sci-fi, fantasy and horror + non-fiction), cooking and fighting video games (mainly Street Fighter & Mortal Kombat). I also consider myself somewhat of a film connoisseur with Denis Villeneuve being my favourite director
+
 
 Please feel free to explore my portfolio and reach out with any questions or comments.

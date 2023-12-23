@@ -10,7 +10,7 @@ header:
   #    url: "/docs/quick-start-guide/"
 excerpt: >
   Collect, process, analyse and present data to support both everyday and strategic business decisions.<br />
-  <small>Key skills: Python, SQL (MySQL, PostgreSQL), Tableau, Git and Jira</small><br />
+  <small>Key skills: Python, SQL (MySQL, PostgreSQL), Google Analytics, Databricks, Apache Superset, Tableau, Git and Jira</small><br />
   <small>To get started, visit the Posts & Projects tab.</small>
 #  <small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.24.0">Latest release v4.24.0</a></small>
 feature_row:
