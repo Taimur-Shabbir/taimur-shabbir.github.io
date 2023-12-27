@@ -4,7 +4,7 @@ permalink: /
 hidden: true
 header:
   overlay_color: "#5e616c"
-  overlay_image: /assets/images/jorg-angeli-CAMwIxYk5Xg-unsplash.jpeg
+  overlay_image: /assets/images/gradienta-gwE9vXSi7Xw-unsplash.jpeg
   #actions:
   #  - label: "<i class='fas fa-download'></i> Install now"
   #    url: "/docs/quick-start-guide/"
