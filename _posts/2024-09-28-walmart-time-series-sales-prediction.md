@@ -8,7 +8,7 @@ toc: true
 toc_label: "Table of Contents"
 toc_icon: "cog"
 header:
-  image: /assets/img/franki-chamaki.jpeg
+  image: /assets/img/timeSpace.jpg
   caption: "Image by (Gerd Altmann)[https://pixabay.com/users/geralt-9301/] on (Pixabay)[https://pixabay.com//]"
 #image: timeSpace.jpg
 excerpt: "Discover how I used time series-oriented machine learning models to forecast daily sales for Walmart stores, uncovering insights that could reshape retail decision-making"
