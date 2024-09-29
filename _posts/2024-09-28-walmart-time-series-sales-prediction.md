@@ -458,7 +458,10 @@ sales_line_plot_df_sample_20.plot(figsize = (12, 10))
     
 
 
-A very messy graph but it serves our purpose - we can clearly see that there are clusters of stores with similar volumes of Weekly Sales. It looks like Stores 8, 12, 17 and 18 are clustered together. Let's see if this is indeed the case. (I also looked at the stores 21 to 40 and added these to the below graph as they have a similar volumne of sales)
+A very messy graph but it serves our purpose - we can clearly see that there are clusters of stores with similar 
+volumes of Weekly Sales. It looks like Stores 8, 12, 17 and 18 are clustered together. Let's see if this is indeed
+the case. (I also looked at the stores 21 to 40 and added these to the below graph as they have a similar
+volume of sales)
 
 
 ```python
@@ -477,13 +480,10 @@ sales_line_plot_df.loc[:, [8, 12, 17, 18, 35, 40]].plot(figsize = (12, 10))
 ![png](output_14_1.png)
     
 
-
+Nice. Let's go ahead and create a new dataframe with only our require stores. Let's also combine the sales of all 
+stores at each given Date, the values of which are thankfully consistent across stores
 
 ```python
-# nice. Let's go ahead and create a new dataframe with only our require stores
-# Let's also combine the sales of all stores at each given Date, the values of which are
-# thankfully consistent across stores
-
 df_selected_stores = df[df.Store.isin([8, 12, 17, 18, 35, 40])]
 df_selected_stores = df_selected_stores.groupby('Date')['Weekly_Sales'].sum().to_frame()
 
@@ -492,27 +492,20 @@ df_selected_stores.index = pd.to_datetime(df_selected_stores.index)
 df_selected_stores.sort_index(inplace = True)
 ```
 
-
+Let's do a final check on the combined weekly data for our 5 stores
 ```python
-# final visualisation check
+
 
 df_selected_stores.plot(kind = 'line', figsize = (10, 8))
 ```
-
-
-
-
-    <AxesSubplot:xlabel='Date'>
-
-
-
 
     
 ![png](output_16_1.png)
     
 
 
-Alright, before we do a persistence baseline evaluation, we need to resample the data. This is because the Date values are erratic and don't follow any real pattern (see below)
+Alright, before we do a persistence baseline evaluation, we need to resample the data. This is because the Date 
+values are erratic and don't follow any real pattern (see below)
 
 
 ```python
@@ -550,11 +543,15 @@ pd.Series(df_selected_stores.index.unique())
 
 
 
-It seems reasonable that a supermarkets sales follow a daily cycle - many customers shop on the weekend, for example. Alternatively we can also create a slice of the data that displays weekly or monthly data.
+It seems reasonable that a supermarkets sales follow a daily cycle - many customers shop on the weekend, for example. 
+Alternatively we can also create a slice of the data that displays weekly or monthly data.
 
-Initially I wanted to have a weekly view. Unfortunately, the Date values are very erratic. This is because in many cases, a given week has only one data point, while other weeks have 0 data points and others still have multiple data points. Downsampling to weekly data in this case gives us NaNs for many weeks.
+Initially I wanted to have a weekly view. However, the Date values are irregular and this is problematic; in many cases,
+a given week has only one data point, while other weeks have 0 data points and others still have multiple data points.
+Downsampling to weekly data in this case gives us NaNs for many weeks.
 
-As a result, I will upsample to Daily data and interpolate views between existing data points using a quadratic function. If our model's performance is poor on this view, we can always try a monthly framing of the problem.
+As a result, I will upsample to Daily data and interpolate views between existing data points using a quadratic 
+function. If our model's performance is poor on this view, we can always try a monthly framing of the problem.
 
 
 ```python
@@ -569,14 +566,6 @@ upsampled_df_selected_stores.rename({'Weekly_Sales':'Daily Sales'}, axis = 1, in
 ```python
 upsampled_df_selected_stores.plot()
 ```
-
-
-
-
-    <AxesSubplot:xlabel='Date'>
-
-
-
 
     
 ![png](output_21_1.png)
