@@ -470,14 +470,7 @@ sales_line_plot_df.loc[:, [8, 12, 17, 18, 35, 40]].plot(figsize = (12, 10))
 
 
 
-
-    <AxesSubplot:xlabel='Date'>
-
-
-
-
-    
-![png](output_14_1.png)
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_14_1.png" alt="None">
     
 
 Nice. Let's go ahead and create a new dataframe with only our require stores. Let's also combine the sales of all 
@@ -499,9 +492,8 @@ Let's do a final check on the combined weekly data for our 5 stores
 df_selected_stores.plot(kind = 'line', figsize = (10, 8))
 ```
 
-    
-![png](output_16_1.png)
-    
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_16_1.png" alt="None">
+ 
 
 
 Alright, before we do a persistence baseline evaluation, we need to resample the data. This is because the Date 
@@ -567,16 +559,20 @@ upsampled_df_selected_stores.rename({'Weekly_Sales':'Daily Sales'}, axis = 1, in
 upsampled_df_selected_stores.plot()
 ```
 
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_21_1.png" alt="None">
     
-![png](output_21_1.png)
-    
 
 
-Before we do anything else, we need to have a baseline performance to compare our eventual model and predictions to. In time series problem, a persistence or naive forecast is often used for this purpose. Put simply, we will use the value at obs(t-1) as a prediction for the value at obs(t). 
+Before we do anything else, we need to have a baseline performance to compare our eventual model and predictions to. 
+In time series problem, a persistence or naive forecast is often used for this purpose. Put simply, we will use the 
+value at obs(t-1) as a prediction for the value at obs(t). 
 
-To do this, we split the data into a training and test set, setting aside 90% of the data for the training set. The test size is small because we will later need to iterate through our ARIMA model len(test) times. In other words, if len(test) is large, it will take a long time for our ARIMA model to fit
+To do this, we split the data into a training and test set, setting aside 90% of the data for the training set.
+The test size is small because we will later need to iterate through our ARIMA model len(test) times. In other words,
+if len(test) is large, it will take a long time for our ARIMA model to fit
 
-We will then walk forward over the test set, adding each 'new' observation seen in the test set to our training set, and using that as the prediction for the next time stamp
+We will then walk forward over the test set, adding each 'new' observation seen in the test set to our training set,
+and using that as the prediction for the next time stamp
 
 
 ```python
