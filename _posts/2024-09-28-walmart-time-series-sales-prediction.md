@@ -21,19 +21,19 @@ Walmart has Weekly Sales data spanning almost 3 years for 45 of its stores in th
 I have been tasked to come up with a method to forecast its sales. These predictions, if accurate and reliable, will be
 extremely  useful to Walmart for several reasons:
 
-1. *Operations & Inventory Optimization*: Predicting daily sales enables Walmart to streamline its operations by 
+1. **Operations & Inventory Optimization**: Predicting daily sales enables Walmart to streamline its operations by 
    optimizing inventory management. Accurate sales forecasts help ensure that the right products are stocked at the 
    right locations, reducing excess inventory and minimizing stockouts. Additionally, these predictions can help 
    Walmart optimize staffing levels, aligning workforce availability with customer traffic and demand, which ensures 
    that  stores are adequately staffed during peak times while minimizing labor costs during slower periods.
 
-2. *Enhanced Customer Experience & Service*: Sales predictions are key to providing a smoother, more reliable customer 
+2. **Enhanced Customer Experience & Service**: Sales predictions are key to providing a smoother, more reliable customer 
    experience. By anticipating demand trends, Walmart can ensure that high-demand products are always available, 
    avoiding the frustration of out-of-stock items and thereby improving customer satisfaction. Additionally, this
    insight allows for more personalized promotions and marketing efforts, targeting customers with relevant offers
    based on anticipated purchasing trends.
 
-3. *Supply Chain Efficiency & Cost Reduction*: Predicting daily sales helps Walmart manage its supply chain more
+3. **Supply Chain Efficiency & Cost Reduction**: Predicting daily sales helps Walmart manage its supply chain more
    effectively by reducing lead times and enabling just-in-time inventory practices. With better forecasts, the company
    can coordinate with suppliers to avoid last-minute rush orders, reducing shipping costs and improving product
    availability. Moreover, sales predictions support more accurate production scheduling for Walmart’s suppliers,
@@ -49,13 +49,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import mean_squared_error
+from scipy.stats import boxcox
 from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.arima.model import ARIMA
+
 from statsmodels.graphics.gofplots import qqplot
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.tsaplots import plot_pacf
-
-from scipy.stats import boxcox
-from statsmodels.tsa.arima.model import ARIMA
 
 plt.style.use('fivethirtyeight')
 ```
@@ -424,7 +424,7 @@ df.Date.value_counts()
 Everything looks to be in order. There are no missing values. Each store has 45 data points, as does each date.
 Something to note is that standard deviation of the Sales metric is quite high.
 
-# 4) Problem Framing
+# 4) Problem Framing + Data Wrangling & Resampling
 
 We need to do a little work to better frame the problem. I had originally wanted to use a single store to predict 
 weekly sales for, but this number of data points is quite small (45).
@@ -473,7 +473,7 @@ sales_line_plot_df.loc[:, [8, 12, 17, 18, 35, 40]].plot(figsize = (12, 10))
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_14_1.png" alt="None">
     
 
-Nice. Let's go ahead and create a new dataframe with only our require stores. Let's also combine the sales of all 
+Nice. Let's go ahead and create a new dataframe with only our required stores. Let's also combine the sales of all 
 stores at each given Date, the values of which are thankfully consistent across stores
 
 ```python
@@ -485,7 +485,7 @@ df_selected_stores.index = pd.to_datetime(df_selected_stores.index)
 df_selected_stores.sort_index(inplace = True)
 ```
 
-Let's do a final check on the combined weekly data for our 5 stores
+Let's do an additional check on the combined "weekly" data for our 5 stores
 ```python
 
 
@@ -494,20 +494,15 @@ df_selected_stores.plot(kind = 'line', figsize = (10, 8))
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_16_1.png" alt="None">
  
-
-
-Alright, before we do a persistence baseline evaluation, we need to resample the data. This is because the Date 
-values are erratic and don't follow any real pattern (see below)
-
+Great! It looks like we have chosen stores with similar levels of sales. Next we need to think about the granularity of
+the data we want to be working with. The data in its current format, while consistent across Stores, are 
+ultimately erratic and don't follow any real pattern (see below). This means we need to conduct resampling 
 
 ```python
 pd.set_option('display.max_rows', 400)
 
 pd.Series(df_selected_stores.index.unique())
 ```
-
-
-
 
     0     2010-01-10
     1     2010-02-04
@@ -535,15 +530,14 @@ pd.Series(df_selected_stores.index.unique())
 
 
 
-It seems reasonable that a supermarkets sales follow a daily cycle - many customers shop on the weekend, for example. 
-Alternatively we can also create a slice of the data that displays weekly or monthly data.
+We have a few options when it comes to choosing post-resampling granularity. We can manipulate our dataset to
+show daily, weekly, monthly or even quarterly data. However, it seems reasonable that a supermarkets sales follow 
+a daily cycle - many customers shop on the weekend, for example. As a result, I will upsample to Daily data and 
+interpolate views between existing data points using a quadratic function. 
 
-Initially I wanted to have a weekly view. However, the Date values are irregular and this is problematic; in many cases,
-a given week has only one data point, while other weeks have 0 data points and others still have multiple data points.
-Downsampling to weekly data in this case gives us NaNs for many weeks.
-
-As a result, I will upsample to Daily data and interpolate views between existing data points using a quadratic 
-function. If our model's performance is poor on this view, we can always try a monthly framing of the problem.
+I chose a quadratic function instead of a linear one because it looks more natural visually.
+In any case, if our model's performance is poor on this view, we can always try a linear interpolation or even a
+weekly/monthly framing of the problem.
 
 
 ```python
@@ -559,17 +553,27 @@ upsampled_df_selected_stores.rename({'Weekly_Sales':'Daily Sales'}, axis = 1, in
 upsampled_df_selected_stores.plot()
 ```
 
+
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_21_1.png" alt="None">
-    
 
 
-Before we do anything else, we need to have a baseline performance to compare our eventual model and predictions to. 
-In time series problem, a persistence or naive forecast is often used for this purpose. Put simply, we will use the 
-value at obs(t-1) as a prediction for the value at obs(t). 
+This looks reasonable. We have at least 4 outliers in sales, all of which occur December across both years.
+The most likely explanations for these are Christmas and New Year's. We also see a slump in the first few days of
+January. Finally, the data seems to be trend-stationary. While the graph shows what looks to be a seasonal component
+to the data, it is merely only cyclical data. To be classed as seasonality, cycles need to be repeated at the 
+same frequency, a condition our graph clearly does not meet.
 
-To do this, we split the data into a training and test set, setting aside 90% of the data for the training set.
+We will return to this in a moment as first, we need a baseline performance to compare our eventual model to. 
+
+# 5) Naive/Persistence Forecast
+ 
+In time series problems, a persistence or naive forecast uses the value at obs(t-1) as a prediction for the value at
+obs(t). It then compares each prediction against each observed value and summarises the skill of the model using
+the root mean squared error (RMSE) measure
+
+To perform this, we split the data into a training and test set, setting aside 90% of the data for the training set.
 The test size is small because we will later need to iterate through our ARIMA model len(test) times. In other words,
-if len(test) is large, it will take a long time for our ARIMA model to fit
+if len(test) is large, it will take a long time for our ARIMA model to fit.
 
 We will then walk forward over the test set, adding each 'new' observation seen in the test set to our training set,
 and using that as the prediction for the next time stamp
@@ -630,7 +634,8 @@ for i in range(20):
     Predicted Value: £5541958 | Actual Value: £5524256
 
 
-The persistence forecast error is only about £46k per day. As a % of the mean sales over the time period, we see that it is only around a 0.8% error
+The persistence forecast error is only about £46k per day. As a % of the mean sales over the time period, we see that 
+it is only around a 0.8% error
 
 Still, this is the target to beat for our model and predictions
 
@@ -645,35 +650,17 @@ rmse / np.mean(X)
     0.007974285431459617
 
 
-
-Let's look at the data more closely
-
-
-```python
-plt.figure(figsize = (12, 6))
-plt.plot(upsampled_df_selected_stores)
-```
+# 6) Testing for Stationarity + Exploring Auto- and Partial Autocorrelation
 
 
+We use the Augmented Dickey-Fuller test to check if our dataset is stationary. This condition is necessary for our
+ARIMA model to perform well on it. If the series is non-stationary, we may need to perform differencing on it by
+subtracting obs(t-1) from obs(t).
 
+The null hypothesis for this test is that the series has unit root, and therefore is non-stationary
 
-    [<matplotlib.lines.Line2D at 0x7fd461da1510>]
-
-
-
-
-    
-![png](output_28_1.png)
-    
-
-
-- At least 4 big outlier values, all of which occur towards the end of the year
-- Seems like there is some seasonal/cyclical behaviour, but it is erratic
-- There does not seem to be a trend in the data
-
-Let's check if the data is stationary using the Augmented Dickey-Fuller test. The null hypothesis for this test is that the series has unit root, and therefore is non-stationary
-
-We see below that the test statistic is very extreme and the p-value is 0. Hence, we reject the null hypothesis - this series is stationary
+We see below that the test statistic is very extreme and the p-value is 0. Hence, we reject the null hypothesis - this 
+series is stationary.
 
 
 ```python
@@ -686,13 +673,21 @@ print('p-value: %.3f' % result[1])
     p-value: 0.000
 
 
-Manually configured ARIMA
+# 6) Manually configured ARIMA
 
-Let's manually configure an ARIMA model using Autocorrelation and Partial Autocorrelation Plots
+Let's manually configure an ARIMA model, which requies an input of 3 parameters:
+- p: the number of lag observations included in the model
+- d: the number of times the raw observations are differenced
+- q: the size of the moving average window
 
-From the below graphs, we see that correlations with up to 7 lagged values are significant. So we can start with value of 7 for the 'p' or Autoregression parameter
+We already know that d = 0 is a good value to start from given that the data is stationary. By Autocorrelation and
+Partial Autocorrelation Plots of the data, we can find suitable values for p and q, respectively.
 
-Additionally, the PACF suggests we can use a value of 4 for the 'q' or Moving Average parameter
+
+## 6.1) Autocorrelation Plot
+
+From the graph below, we see that correlations with up to 7 lagged values are significant. So we can start with value
+of 7 for the 'p' or Autoregression parameter
 
 
 ```python
@@ -700,9 +695,12 @@ plot_acf(upsampled_df_selected_stores);
 ```
 
 
-    
-![png](output_32_0.png)
-    
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_32_0.png" alt="None">
+
+
+## 6.2) Partial Autocorrelation Plot
+
+Additionally, the PACF suggests we can use a value of 4 for the 'q' or Moving Average parameter
 
 
 
@@ -710,10 +708,10 @@ plot_acf(upsampled_df_selected_stores);
 plot_pacf(upsampled_df_selected_stores, lags = 15, method = 'ywm');
 ```
 
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_33_0.png" alt="None">
+ 
 
-    
-![png](output_33_0.png)
-    
+## 6.3) Train and evaluate ARIMA
 
 
 To fit and evaluate our ARIMA model, we need to execute the same method of walk forward validation as we did with the persistence model. That is to say, we will:
@@ -723,7 +721,8 @@ To fit and evaluate our ARIMA model, we need to execute the same method of walk 
 - add the 'current' value of the test set to the training set
 - retrain the model on the training and repeat, until we have come to the end of the test set
 
-Through trial and error, I have found that large ARIMA values (like 7) result in a Convergence Error. If we reduce the number of lagged values to be included, we overcome this error
+Through trial and error, I have found that large ARIMA values (like 7) result in a Convergence Error. If we reduce the
+number of lagged values to be included, we overcome this.
 
 
 ```python
@@ -776,11 +775,21 @@ for i in range(20):
     Predicted Value: £5529952 | Actual Value: £5524256
 
 
-Wow, we were able to drastically reduce the RMSE compared to the persistence forecast model. In fact, it is a (7289.27 - 45872.02)/45872.02 = 84% reduction in RMSE
+Wow, we were able to drastically reduce the RMSE compared to the persistence forecast model. In fact, it is a 
+(7289.27 - 45872.02)/45872.02 = 84% reduction in RMSE!
 
-However, we might be able to do even better. Above, I manually configured the ARIMA model to be used. We can now take a more analytical approach and perform Grid Search to find the optimal values for p, d and q
+However, we might be able to do even better. Above, I manually configured the ARIMA model to be used. We can now take
+a more analytical approach and perform Grid Search to find the optimal values for p, d and q. This is called a Grid Search.
 
-To do this, I need to wrap my ARIMA code in a function. I then need to define another function that performs grid search, and within this seconf function, I need to call my ARIMA function
+
+# 7) Grid Search for ARIMA Parameters
+To perform GS, I need to wrap my ARIMA code in a function. I then need to define another function that
+iterates through different combinations of p, d and q and calls my ARIMA function to fit and evaluate the current
+iteration of the model.
+
+Unfortunately, while testing this out, my personal machine does not seem suited to running the function as it was 
+running for over an hour without finishing the required loops. However, I am certain that with more computational 
+resources, we could improve the performance of our model even further.
 
 
 ```python
@@ -833,7 +842,5 @@ warnings.filterwarnings("ignore")
 evaluate_models(X, p_values, d_values, q_values)
 ```
 
-
-```python
-
-```
+And that's it! Now we can use our ARIMA model to forecast sales for any given day of the week and, even better, update
+it with data as more of it becomes available. This will lead to better performance in the long run.
