@@ -460,7 +460,7 @@ sales_line_plot_df_sample_20.plot(figsize = (12, 10))
 
 A very messy graph but it serves our purpose - we can clearly see that there are clusters of stores with similar 
 volumes of Weekly Sales. It looks like Stores 8, 12, 17 and 18 are clustered together. Let's see if this is indeed
-the case. (I also looked at the stores 21 to 40 and added these to the below graph as they have a similar
+the case. (I also looked at the stores 35 and 40 and added these to the below graph as they have a similar
 volume of sales)
 
 
@@ -473,8 +473,8 @@ sales_line_plot_df.loc[:, [8, 12, 17, 18, 35, 40]].plot(figsize = (12, 10))
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_14_1.png" alt="None">
     
 
-Nice. Let's go ahead and create a new dataframe with only our required stores. Let's also combine the sales of all 
-stores at each given Date, the values of which are thankfully consistent across stores
+Nice. Let's go ahead and create a new dataframe with only our required stores for which we'll combine sales at each
+given Date. These Date values are thankfully consistent across stores, allowing an easy merge.
 
 ```python
 df_selected_stores = df[df.Store.isin([8, 12, 17, 18, 35, 40])]
@@ -487,8 +487,6 @@ df_selected_stores.sort_index(inplace = True)
 
 Let's do an additional check on the combined "weekly" data for our 5 stores
 ```python
-
-
 df_selected_stores.plot(kind = 'line', figsize = (10, 8))
 ```
 
@@ -499,8 +497,6 @@ the data we want to be working with. The data in its current format, while consi
 ultimately erratic and don't follow any real pattern (see below). This means we need to conduct resampling 
 
 ```python
-pd.set_option('display.max_rows', 400)
-
 pd.Series(df_selected_stores.index.unique())
 ```
 
@@ -567,13 +563,13 @@ We will return to this in a moment as first, we need a baseline performance to c
 
 # 5) Naive/Persistence Forecast
  
-In time series problems, a persistence or naive forecast uses the value at obs(t-1) as a prediction for the value at
-obs(t). It then compares each prediction against each observed value and summarises the skill of the model using
-the root mean squared error (RMSE) measure
+In time series problems, a persistence or naive forecast uses obs(t-1) as a prediction for obs(t). It then compares
+each prediction against each observed value and summarises the skill of the model using the root mean squared 
+error (RMSE) measure.
 
 To perform this, we split the data into a training and test set, setting aside 90% of the data for the training set.
-The test size is small because we will later need to iterate through our ARIMA model len(test) times. In other words,
-if len(test) is large, it will take a long time for our ARIMA model to fit.
+The test size is small because we will later need to iterate through our ARIMA model *len(test)* times. In other words,
+if *len(test)* is large, it will take a long time for our ARIMA model to fit.
 
 We will then walk forward over the test set, adding each 'new' observation seen in the test set to our training set,
 and using that as the prediction for the next time stamp
@@ -654,7 +650,7 @@ rmse / np.mean(X)
 
 
 We use the Augmented Dickey-Fuller test to check if our dataset is stationary. This condition is necessary for our
-ARIMA model to perform well on it. If the series is non-stationary, we may need to perform differencing on it by
+ARIMA model to perform well. If the series is non-stationary, we may need to perform differencing on it by
 subtracting obs(t-1) from obs(t).
 
 The null hypothesis for this test is that the series has unit root, and therefore is non-stationary
@@ -673,18 +669,18 @@ print('p-value: %.3f' % result[1])
     p-value: 0.000
 
 
-# 6) Manually configured ARIMA
+# 7) Manually configured ARIMA
 
 Let's manually configure an ARIMA model, which requies an input of 3 parameters:
 - p: the number of lag observations included in the model
 - d: the number of times the raw observations are differenced
 - q: the size of the moving average window
 
-We already know that d = 0 is a good value to start from given that the data is stationary. By Autocorrelation and
+We already know that d = 0 is a good value to start from given that the findings of section 6. By Autocorrelation and
 Partial Autocorrelation Plots of the data, we can find suitable values for p and q, respectively.
 
 
-## 6.1) Autocorrelation Plot
+## 7.1) Autocorrelation Plot
 
 From the graph below, we see that correlations with up to 7 lagged values are significant. So we can start with value
 of 7 for the 'p' or Autoregression parameter
@@ -698,7 +694,7 @@ plot_acf(upsampled_df_selected_stores);
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_32_0.png" alt="None">
 
 
-## 6.2) Partial Autocorrelation Plot
+## 7.2) Partial Autocorrelation Plot
 
 Additionally, the PACF suggests we can use a value of 4 for the 'q' or Moving Average parameter
 
@@ -711,7 +707,7 @@ plot_pacf(upsampled_df_selected_stores, lags = 15, method = 'ywm');
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_33_0.png" alt="None">
  
 
-## 6.3) Train and evaluate ARIMA
+## 7.3) Train and evaluate ARIMA
 
 
 To fit and evaluate our ARIMA model, we need to execute the same method of walk forward validation as we did with the persistence model. That is to say, we will:
@@ -776,16 +772,45 @@ for i in range(20):
 
 
 Wow, we were able to drastically reduce the RMSE compared to the persistence forecast model. In fact, it is a 
-(7289.27 - 45872.02)/45872.02 = 84% reduction in RMSE!
+(7289.27 - 45872.02)/45872.02 = 84% reduction in RMSE! Does this mean we should pack up and go home? Not yet!
 
-However, we might be able to do even better. Above, I manually configured the ARIMA model to be used. We can now take
-a more analytical approach and perform Grid Search to find the optimal values for p, d and q. This is called a Grid Search.
+# 8) Investigating Residuals
+
+To improve our understanding of the model and the model itself, we can look at the resulting residuals. These are the 
+differences between actual(t) and predicted(t). Ideally, a plot of residuals would show no real pattern; this 
+suggests that the model has captured as much of the 'signal' as possible and the remaining errors are due to 
+'noise'. For the same reason, the ideal mean of this data should be 0.
+
+```python
+residuals = [test[i] - predictions[i] for i in range(len(test))]
+
+plt.figure(figsize = (10, 6))
+plt.plot(pd.Series(residuals),
+         linewidth = 0.8,
+         color = 'darkviolet');
+
+np.mean(residuals)
+```
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/residuals.png" alt="None">
+
+    -1475.3704956106528
+
+Oh no. Our residuals have a very large mean of nearly £1,500. However, when we look at the accompanying graph, we see
+that the 4 main outliers in both Decembers are heavily contributing to this figure. This is in fact a good thing; we
+*don't* want our model to predict random large fluctuations in Sales. This is where a bit of business sensability comes
+in; Walmart's store managers know that they see a spike in sales every December. They can prepare accordingly as a result
+and do not need our model to spell this out for them.
+
+Regardless, the mean of the residuals will be non-zero even if we remove outliers. It seems the model is excellent at
+predicting the second half of the data but not as good at doing so for the first. There is no obvious pattern to learn
+from either. Is there another way to possibly make our model better? Yes - we can use Grid Search.
 
 
-# 7) Grid Search for ARIMA Parameters
-To perform GS, I need to wrap my ARIMA code in a function. I then need to define another function that
-iterates through different combinations of p, d and q and calls my ARIMA function to fit and evaluate the current
-iteration of the model.
+# 9) Grid Search for ARIMA Parameters
+Above, I manually configured the ARIMA model to be used. We can now take a more analytical approach and perform Grid 
+Search to find the optimal values for p, d and q. To do so, I need to wrap my ARIMA code in a function, then need to 
+write another function that iterates through different combinations of p, d and q and calls my ARIMA function to fit 
+and evaluate the current iteration of the model.
 
 Unfortunately, while testing this out, my personal machine does not seem suited to running the function as it was 
 running for over an hour without finishing the required loops. However, I am certain that with more computational 
