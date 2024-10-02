@@ -973,7 +973,7 @@ plt.plot([None for x in dataset[:100]] + [x for x in test],
           color = 'green',
           label = 'Test Set - Actual')
 
-plt.plot([None for x in dataset[:100]] + [x for x in test],
+plt.plot([None for x in dataset[:100]] + [x for x in predictions],
           linewidth = 1.3,
           color = 'slateblue',
           linestyle = '--',
