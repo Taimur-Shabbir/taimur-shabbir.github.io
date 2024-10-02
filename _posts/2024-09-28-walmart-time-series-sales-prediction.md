@@ -559,49 +559,80 @@ January. Finally, the data seems to be trend-stationary. While the graph shows w
 to the data, it is merely only cyclical data. To be classed as seasonality, cycles need to be repeated at the 
 same frequency, a condition our graph clearly does not meet.
 
-We will return to this in a moment as first, we need a baseline performance to compare our eventual model to. 
-
-# 5) Naive/Persistence Forecast
+We will return to this in a moment as first, as we have more pressing concerns to deal with first. Namely, we need to
+have a baseline performance to compare our eventual model and predictions to. 
+# 5) Dataset Splitting & Naive/Persistence Forecast
  
 In time series problems, a persistence or naive forecast uses obs(t-1) as a prediction for obs(t). It then compares
 each prediction against each observed value and summarises the skill of the model using the root mean squared 
 error (RMSE) measure.
 
-To perform this, we split the data into a training and test set, setting aside 90% of the data for the training set.
-The test size is small because we will later need to iterate through our ARIMA model *len(test)* times. In other words,
-if *len(test)* is large, it will take a long time for our ARIMA model to fit.
+To perform this, we split the data 3 ways - training, validation and test. The validation set will be used to see how
+well our initial trained model performs while the test set will be used as a final "blind" check to see whether our 
+model truly has the skill at predicting sales that we may think it has. The dataset splits are as follows: 60% for 
+training, 20% for validation and 20% for test.
 
-We will then walk forward over the test set, adding each 'new' observation seen in the test set to our training set,
-and using that as the prediction for the next time stamp
+Coming back to the Naive forecast, we will walk forward over the validation set, adding each 'new' observation seen to 
+our training set, and using that as the prediction for the next time stamp.
 
 
 ```python
 
-# split into train and test sets
+# X = upsampled_df_selected_stores['Daily Sales'].values
 
-X = upsampled_df_selected_stores['Daily Sales'].values
-train_size = int(len(X)*0.90)
+train_and_valid_size = int(len(X)*0.80) # 80% of entire dataset
+dataset = X[:train_and_valid_size]
+test = X[train_and_valid_size:]
 
-train, test = X[0:train_size], X[train_size:]
+train_size = int(len(dataset)*0.75) # 75% of 80% = 60% of entire dataset
+train = dataset[:train_size] # 20%
+validation = dataset[train_size:] # 20%
+
+print('Train Size:', len(train))
+print('Validation Size:', len(validation))
+print('Test Size:', len(test))
 
 history = [x for x in train]
 predictions = []
 
-for i in range(len(test)):
+for i in range(len(validation)):
     yhat = history[-1] # the very last observation seen in 'history'
     predictions.append(yhat)
-    latest_observation = test[i]  # add the value we have just seen to 'history'
+    latest_observation = validation[i]  # add the value we have just seen to 'history'
     history.append(latest_observation)
 
     
 # find RMSE
-rmse = np.sqrt(mean_squared_error(test, predictions))
+rmse = np.sqrt(mean_squared_error(validation, predictions))
 print('RMSE for Persistence Model is £%.2f in Sales per Day' % rmse)
+
+plt.figure(figsize = (12, 5))
+plt.plot([x for x in validation],
+          linewidth = 1,
+          color = 'crimson',
+          label = 'Actual')
+plt.plot([x for x in predictions],
+          linewidth = 1,
+          color = 'cadetblue',
+          linestyle = '--',
+          label = 'Persistence')
+
+plt.suptitle('Naive Forecast Visualised', x = 0.5125)
+plt.title('Actual Values vs Persistence Values', size = 13, pad = -20)
+plt.xlabel('Index of Observations', size = 11, labelpad = 15)
+plt.ylabel('Sales (£)', size = 11, labelpad = 15)
+plt.legend()
 ```
 
-    RMSE for Persistence Model is £45872.02 in Sales per Day
+    Train Size: 639
+    Validation Size: 213
+    Test Size: 214
+    RMSE for Persistence Model is £197929.88 in Sales per Day
 
 
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/naive_forecast.png" alt="None">
+
+Below we can see a small sample of predicted vs actual values
 
 ```python
 for i in range(20):
@@ -630,8 +661,8 @@ for i in range(20):
     Predicted Value: £5541958 | Actual Value: £5524256
 
 
-The persistence forecast error is only about £46k per day. As a % of the mean sales over the time period, we see that 
-it is only around a 0.8% error
+The persistence forecast error is about £198k per day. As a % of the mean sales over the time period, we see that it is
+only around a 3% error
 
 Still, this is the target to beat for our model and predictions
 
@@ -641,9 +672,7 @@ rmse / np.mean(X)
 ```
 
 
-
-
-    0.007974285431459617
+    0.034404241504500443
 
 
 # 6) Testing for Stationarity + Exploring Auto- and Partial Autocorrelation
@@ -660,7 +689,7 @@ series is stationary.
 
 
 ```python
-result = adfuller(X)
+result = adfuller(dataset)
 print('ADF Test Statistic: %.3f' % result[0])
 print('p-value: %.3f' % result[1])
 ```
@@ -687,7 +716,7 @@ of 7 for the 'p' or Autoregression parameter
 
 
 ```python
-plot_acf(upsampled_df_selected_stores);
+plot_acf(dataset);
 ```
 
 
@@ -699,9 +728,8 @@ plot_acf(upsampled_df_selected_stores);
 Additionally, the PACF suggests we can use a value of 4 for the 'q' or Moving Average parameter
 
 
-
 ```python
-plot_pacf(upsampled_df_selected_stores, lags = 15, method = 'ywm');
+plot_pacf(dataset, lags = 15, method = 'ywm');
 ```
 
 <img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/output_33_0.png" alt="None">
@@ -710,12 +738,14 @@ plot_pacf(upsampled_df_selected_stores, lags = 15, method = 'ywm');
 ## 7.3) Train and evaluate ARIMA
 
 
-To fit and evaluate our ARIMA model, we need to execute the same method of walk forward validation as we did with the persistence model. That is to say, we will:
+To fit and evaluate our ARIMA model, we need to execute the same method of walk forward validation as we did with the
+persistence model. That is to say, we will:
 
 - train the model on the entire training set
 - make a 1-step prediction
-- add the 'current' value of the test set to the training set
-- retrain the model on the training and repeat, until we have come to the end of the test set
+- compare the actual value from validation set at, actual(t), to predicted(t)
+- add the actual(t) value of the validation set to the training set
+- retrain the model on the training and repeat, until we have come to the end of the validation set
 
 Through trial and error, I have found that large ARIMA values (like 7) result in a Convergence Error. If we reduce the
 number of lagged values to be included, we overcome this.
@@ -725,118 +755,123 @@ number of lagged values to be included, we overcome this.
 history = [x for x in train]
 predictions = []
 
-for i in range(len(test)):
+for i in range(len(validation)):
     model = ARIMA(history, order = (3, 0, 4))
     model_fit = model.fit()
     yhat = model_fit.forecast()[0]
     predictions.append(yhat)
-    latest_obs = test[i]
+    latest_obs = validation[i]
     history.append(latest_obs)
 ```
 
 
 ```python
-rmse = np.sqrt(mean_squared_error(test, predictions))
+rmse = np.sqrt(mean_squared_error(validation, predictions))
 print('RMSE for ARIMA Model is £%.2f in Sales per Day' % rmse)
 ```
 
-    RMSE for Persistence Model is £7289.27 in Sales per Day
-
+    RMSE for ARIMA Model is £34899.79 in Sales per Day
 
 
 ```python
 for i in range(20):
-    print('Predicted Value: £%.d | Actual Value: £%d' % (predictions[i], test[i]))
+    print('Predicted Value: £%.d | Actual Value: £%d' % (predictions[i], validation[i]))
 ```
 
-    Predicted Value: £5950185 | Actual Value: £5953795
-    Predicted Value: £5972777 | Actual Value: £5975201
-    Predicted Value: £5987227 | Actual Value: £5989949
-    Predicted Value: £5995443 | Actual Value: £5989640
-    Predicted Value: £5973543 | Actual Value: £5972872
-    Predicted Value: £5944142 | Actual Value: £5939646
-    Predicted Value: £5895898 | Actual Value: £5889961
-    Predicted Value: £5832052 | Actual Value: £5826909
-    Predicted Value: £5761621 | Actual Value: £5769028
-    Predicted Value: £5724390 | Actual Value: £5719410
-    Predicted Value: £5679737 | Actual Value: £5678053
-    Predicted Value: £5647597 | Actual Value: £5644958
-    Predicted Value: £5622036 | Actual Value: £5620126
-    Predicted Value: £5603700 | Actual Value: £5603555
-    Predicted Value: £5596953 | Actual Value: £5593979
-    Predicted Value: £5591627 | Actual Value: £5583791
-    Predicted Value: £5574931 | Actual Value: £5571725
-    Predicted Value: £5562750 | Actual Value: £5557781
-    Predicted Value: £5546685 | Actual Value: £5541958
-    Predicted Value: £5529952 | Actual Value: £5524256
+    Predicted Value: £5469507 | Actual Value: £5473522
+    Predicted Value: £5405513 | Actual Value: £5408708
+    Predicted Value: £5372737 | Actual Value: £5363526
+    Predicted Value: £5340838 | Actual Value: £5337975
+    Predicted Value: £5335498 | Actual Value: £5332057
+    Predicted Value: £5343497 | Actual Value: £5345770
+    Predicted Value: £5376484 | Actual Value: £5379115
+    Predicted Value: £5427943 | Actual Value: £5428317
+    Predicted Value: £5486079 | Actual Value: £5470724
+    Predicted Value: £5503206 | Actual Value: £5502562
+    Predicted Value: £5528979 | Actual Value: £5523829
+    Predicted Value: £5538888 | Actual Value: £5534527
+    Predicted Value: £5540881 | Actual Value: £5534655
+    Predicted Value: £5532993 | Actual Value: £5524214
+    Predicted Value: £5510642 | Actual Value: £5509009
+    Predicted Value: £5498158 | Actual Value: £5523883
+    Predicted Value: £5568361 | Actual Value: £5574642
+    Predicted Value: £5643606 | Actual Value: £5661287
+    Predicted Value: £5764066 | Actual Value: £5783817
+    Predicted Value: £5914683 | Actual Value: £5942233
 
-
-Wow, we were able to drastically reduce the RMSE compared to the persistence forecast model. In fact, it is a 
-(7289.27 - 45872.02)/45872.02 = 84% reduction in RMSE! Does this mean we should pack up and go home? Not yet!
-
-# 8) Investigating Residuals
-
-To improve our understanding of the model and the model itself, we can look at the resulting residuals. These are the 
-differences between actual(t) and predicted(t). Ideally, a plot of residuals would show no real pattern; this 
-suggests that the model has captured as much of the 'signal' as possible and the remaining errors are due to 
-'noise'. For the same reason, the ideal mean of this data should be 0.
 
 ```python
-residuals = [test[i] - predictions[i] for i in range(len(test))]
 
-plt.figure(figsize = (10, 6))
-plt.plot(pd.Series(residuals),
-         linewidth = 0.8,
-         color = 'darkviolet');
+plt.figure(figsize = (12, 5))
+plt.plot([x for x in validation],
+          linewidth = 2,
+          color = 'green',
+          label = 'Actual')
 
-np.mean(residuals)
+plt.plot([x for x in predictions],
+          linewidth = 1.7,
+          color = 'red',
+          linestyle = '--',
+          label = 'Predicted')
+
+plt.suptitle('ARIMA(3, 0, 4) vs Actual Data', x = 0.5125)
+plt.xlabel('Index of Observations', size = 11, labelpad = 15)
+plt.ylabel('Sales (£)', size = 11, labelpad = 15)
+plt.legend()
+
 ```
-<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/residuals.png" alt="None">
 
-    -1475.3704956106528
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/arima304.png" alt="None">
 
-Oh no. Our residuals have a very large mean of nearly £1,500. However, when we look at the accompanying graph, we see
-that the 4 main outliers in both Decembers are heavily contributing to this figure. This is in fact a good thing; we
-*don't* want our model to predict random large fluctuations in Sales. This is where a bit of business sensability comes
-in; Walmart's store managers know that they see a spike in sales every December. They can prepare accordingly as a result
-and do not need our model to spell this out for them.
+Wow, we were able to drastically reduce the RMSE compared to the persistence forecast model. In fact, it is a
+(34899.797 - 197929.88)/197929.88 = 82% reduction in RMSE. Visually, the model performs extremely well and is able to
+mimic the actual data quite closely.
 
-Regardless, the mean of the residuals will be non-zero even if we remove outliers. It seems the model is excellent at
-predicting the second half of the data but not as good at doing so for the first. There is no obvious pattern to learn
-from either. Is there another way to possibly make our model better? Yes - we can use Grid Search.
+In fact, the model feels like it's performing *too* well, which makes me very suspicious - I am sceptical that the
+model is actually this skilled. Luckily, this is exactly what our test set is for; later on, we'll see if the model
+performs as well or near enough on data it has never seen previously.
+
+But before that, we have two more steps to complete. We can i) try and make the model performance on the validation set
+even better and ii) look at the residuals of the above model to learn more about the errors it's making and whether we
+can use that information for our benefit
 
 
-# 9) Grid Search for ARIMA Parameters
-Above, I manually configured the ARIMA model to be used. We can now take a more analytical approach and perform Grid 
-Search to find the optimal values for p, d and q. To do so, I need to wrap my ARIMA code in a function, then need to 
-write another function that iterates through different combinations of p, d and q and calls my ARIMA function to fit 
-and evaluate the current iteration of the model.
+Let's tackle point i) first. Above, I manually configured the ARIMA model to be used. We can now take a more analytical
+approach and perform Grid Search to find the optimal values for p, d and q
 
-Unfortunately, while testing this out, my personal machine does not seem suited to running the function as it was 
-running for over an hour without finishing the required loops. However, I am certain that with more computational 
+# 8) Grid Search for ARIMA Parameters
+
+I will wrap my ARIMA code in a function and define another function that performs grid
+search, calling the former function inside the latter.
+
+Unfortunately in practice, while testing this out, my personal machine did not seem suited to running the function as
+it was running for over an hour without finishing the required loops. However, I am certain that with more computational
 resources, we could improve the performance of our model even further.
 
+So let's view what the implementation of Grid Search would look like (without actually implementing it) before moving
+onto investigating residuals
 
 ```python
+
 import warnings
 
 # define ARIMA evaluation function to be called in evaluate_models function
 def evaluate_arima_model(X, arima_order): 
     
-    train_size = int(len(X) * 0.90)
-    train, test = X[0:train_size], X[train_size:]
+    train_size = int(len(X) * 0.80)
+    train, validation = X[0:train_size], X[train_size:]
     
     history = [x for x in train]
     predictions = list()
     
-    for t in range(len(test)):
+    for t in range(len(validation)):
         model = ARIMA(history, order = arima_order)
         model_fit = model.fit()
         yhat = model_fit.forecast()[0]
         predictions.append(yhat)
-        history.append(test[t])
+        history.append(validation[t])
         
-    rmse = sqrt(mean_squared_error(test, predictions))
+    rmse = sqrt(mean_squared_error(validation, predictions))
     return rmse
 
 # define evaluate_models function - this is the gridsearch function
@@ -860,12 +895,56 @@ def evaluate_models(dataset, p_val, d_val, q_val):
 
 p_values = range(0, 6)
 d_values = range(0, 1)
-q_values = range(0, 12)
+q_values = range(0, 5)
 warnings.filterwarnings("ignore")
 
 # call one function inside the other.
-evaluate_models(X, p_values, d_values, q_values)
+# evaluate_models(X, p_values, d_values, q_values)
+
 ```
+
+
+# 9) Investigating Residuals
+
+Coming on to point ii), here is a plot of the residuals. We see that the plot is too pointy to be Gaussian,and that
+the mean is quite far from 0, suggesting the model is still not capturing all of the signal from the data. 
+
+I suspect a large part of this is because of the extreme outliers we saw in December months. Perhaps we can account for these explicitly in the model by adding an estimate to sales in December for our December predictions
+To improve our understanding of the model and the model itself, we can look at the resulting residuals. These are the 
+differences between actual(t) and predicted(t). Ideally, a plot of residuals would show no real pattern; this 
+suggests that the model has captured as much of the 'signal' as possible and the remaining errors are due to 
+'noise'. For the same reason, the ideal mean of this data should be 0.
+
+```python
+residuals = [validation[i] - predictions[i] for i in range(len(validation))]
+
+pd.Series(residuals).plot(kind = 'kde',
+                          linewidth = 0.8,
+                          figsize = (10, 5),
+                          color = 'darkviolet');
+
+plt.xlabel('Index of Observations',
+           size = 11,
+           labelpad = 20)
+
+
+
+plt.ylabel('Density',
+           size = 11,
+           labelpad = 20)
+
+plt.yticks(size = 9)
+plt.title('Residuals for ARIMA Model Fitted on Walmart Sales',
+          size = 14,
+          pad = 30)
+
+np.mean(residuals)
+
+```
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/residuals.png" alt="None">
+
+    1775.9785734153847
+
 
 And that's it! Now we can use our ARIMA model to forecast sales for any given day of the week and, even better, update
 it with data as more of it becomes available. This will lead to better performance in the long run.
