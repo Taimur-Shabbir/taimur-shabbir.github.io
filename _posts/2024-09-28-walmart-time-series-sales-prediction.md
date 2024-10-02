@@ -743,9 +743,9 @@ persistence model. That is to say, we will:
 
 - train the model on the entire training set
 - make a 1-step prediction
-- compare the actual value from validation set at, actual(t), to predicted(t)
+- compare the actual value from validation set at actual(t), to predicted(t)
 - add the actual(t) value of the validation set to the training set
-- retrain the model on the training and repeat, until we have come to the end of the validation set
+- retrain the model on the training set and repeat, until we have come to the end of the validation set
 
 Through trial and error, I have found that large ARIMA values (like 7) result in a Convergence Error. If we reduce the
 number of lagged values to be included, we overcome this.
@@ -758,7 +758,7 @@ predictions = []
 for i in range(len(validation)):
     model = ARIMA(history, order = (3, 0, 4))
     model_fit = model.fit()
-    yhat = model_fit.forecast()[0]
+    yhat = model_fit.forecast()[0] # one step prediction
     predictions.append(yhat)
     latest_obs = validation[i]
     history.append(latest_obs)
@@ -906,14 +906,8 @@ warnings.filterwarnings("ignore")
 
 # 9) Investigating Residuals
 
-Coming on to point ii), here is a plot of the residuals. We see that the plot is too pointy to be Gaussian,and that
-the mean is quite far from 0, suggesting the model is still not capturing all of the signal from the data. 
+Coming on to point ii), below is a plot of the residuals. 
 
-I suspect a large part of this is because of the extreme outliers we saw in December months. Perhaps we can account for these explicitly in the model by adding an estimate to sales in December for our December predictions
-To improve our understanding of the model and the model itself, we can look at the resulting residuals. These are the 
-differences between actual(t) and predicted(t). Ideally, a plot of residuals would show no real pattern; this 
-suggests that the model has captured as much of the 'signal' as possible and the remaining errors are due to 
-'noise'. For the same reason, the ideal mean of this data should be 0.
 
 ```python
 residuals = [validation[i] - predictions[i] for i in range(len(validation))]
@@ -926,14 +920,10 @@ pd.Series(residuals).plot(kind = 'kde',
 plt.xlabel('Index of Observations',
            size = 11,
            labelpad = 20)
-
-
-
 plt.ylabel('Density',
            size = 11,
            labelpad = 20)
 
-plt.yticks(size = 9)
 plt.title('Residuals for ARIMA Model Fitted on Walmart Sales',
           size = 14,
           pad = 30)
@@ -941,10 +931,69 @@ plt.title('Residuals for ARIMA Model Fitted on Walmart Sales',
 np.mean(residuals)
 
 ```
-<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/residuals.png" alt="None">
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/residuals_kde.png" alt="None">
 
     1775.9785734153847
 
+We see that the plot is too pointy to be Gaussian, and that the mean is quite far from 0, suggesting the model is
+still not capturing all of the signal from the data. 
 
+I suspect a large part of this is because of the extreme outliers we saw in December months. Perhaps we can account for 
+these explicitly in the model by adding an estimate to sales in December for our December predictions
 And that's it! Now we can use our ARIMA model to forecast sales for any given day of the week and, even better, update
 it with data as more of it becomes available. This will lead to better performance in the long run.
+
+Finally, let's see how well the model does on the unseen test set
+
+# 10) Final evaluation on Test Set
+
+```python
+history = [x for x in dataset]
+predictions = []
+
+for i in range(len(test)):
+    model = ARIMA(history, order = (3, 0, 4))
+    model_fit = model.fit()
+    yhat = model_fit.forecast()[0]
+    predictions.append(yhat)
+    latest_obs = test[i]
+    history.append(latest_obs)
+    
+rmse = np.sqrt(mean_squared_error(test, predictions))
+print('RMSE for ARIMA Model is £%.2f in Sales per Day' % rmse)
+
+
+plt.plot([x for x in dataset[:100]], # last 100 obs of training data
+          linewidth = 2,
+          color = 'crimson',
+          label = 'Training Set')
+
+plt.plot([None for x in dataset[:100]] + [x for x in test],
+          linewidth = 1.7,
+          color = 'green',
+          label = 'Test Set - Actual')
+
+plt.plot([None for x in dataset[:100]] + [x for x in test],
+          linewidth = 1.3,
+          color = 'slateblue',
+          linestyle = '--',
+          label = 'Test Set - Predicted')
+
+
+plt.suptitle('ARIMA(3, 0, 4) Final Evaluation vs Test Set', x = 0.5125)
+plt.xlabel('Index of Observations', size = 11, labelpad = 15)
+plt.ylabel('Sales (£)', size = 11, labelpad = 15)
+plt.legend()
+
+```
+
+    RMSE for ARIMA Model is £12850.26 in Sales per Day
+
+<img src="{{ site.url }}{{ site.baseurl }}/images/walmart-time-series/final_arima.png" alt="None">
+
+On the test set, the model performs very well; a *((12850 - 197929) / 197929) * 100* = 93% reduction in error
+from the persistence forecast. 
+
+And that’s it! Now we can use our ARIMA model to forecast sales for any given day of the week and, even better, update 
+it with data as more of it becomes available. This will lead to better performance in the long run.
+
