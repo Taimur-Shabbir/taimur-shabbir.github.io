@@ -1,5 +1,5 @@
 ---
-title: "(WIP) Time Series Forecast: Predicting Daily Sales for Walmart"
+title: "Time Series Forecast: Predicting Daily Sales for Walmart"
 date: 2024-09-28
 tags: [Time Series, Retail, Forecasting]
 #header: ""
@@ -636,7 +636,7 @@ Below we can see a small sample of predicted vs actual values
 
 ```python
 for i in range(20):
-    print('Predicted Value: £%.d | Actual Value: £%d' % (predictions[i], test[i]))
+    print('Predicted Value: £%.d | Actual Value: £%d' % (predictions[i], validation[i]))
 ```
 
     Predicted Value: £5927130 | Actual Value: £5953795
@@ -668,7 +668,7 @@ Still, this is the target to beat for our model and predictions
 
 
 ```python
-rmse / np.mean(X)
+rmse / np.mean(dataset)
 ```
 
 
@@ -694,7 +694,7 @@ print('ADF Test Statistic: %.3f' % result[0])
 print('p-value: %.3f' % result[1])
 ```
 
-    ADF Test Statistic: -5.626
+    ADF Test Statistic: -4.974
     p-value: 0.000
 
 
