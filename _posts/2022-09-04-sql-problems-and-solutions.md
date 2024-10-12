@@ -17,467 +17,99 @@ excerpt: "A live document where I demonstrate my solutions to Medium and Hard-ra
 
 **Note: To see the description for each problem, simply click on the problem name**
 
-# DataLemur
 
-## "Medium" Difficulty
-
-### Google - [Odd and Even Measurements](https://datalemur.com/questions/odd-even-measurements)
-
-
-The key here is to use the ROW_NUMBER() window function and to use day only (using EXTRACT()) in the PARTITION BY clause while using the entire datetime value (named measurement_time) in the ORDER BY clause
-
-```sql
-
-with t as(
-
-    SELECT
-        measurement_id,
-        measurement_value,
-        measurement_time,
-        row_number() over (partition by extract(day from measurement_time) order by measurement_time)
-    FROM
-        measurements)
-SELECT
-    measurement_time::date as measurement_day,
-    sum(case WHEN row_number % 2 != 0 then measurement_value else 0 end) as odd_sum,
-    sum(case when row_number % 2 = 0 then measurement_value else 0 end) as even_sum
-FROM
-    t
-GROUP BY
-    1
-ORDER BY
-    1
-
-```
-
-
-### UnitedHealth - [Patient Support Analysis (Part 4)](https://datalemur.com/questions/long-calls-growth)
-
-The key to solving this problem is to use the LAG() window function to compare the number of long calls in one month to that of the previous month and to cast the percentage calculation as a decimal to be able to get negative percentages
-
-```sql
-
-with t as(
-
-    SELECT
-        extract(year from call_received) as year,
-        extract(month from call_received) as month,
-        sum(case when call_duration_secs > 300 then 1 else 0 end) as lc,
-        lag( sum(case when call_duration_secs > 300 then 1 else 0 end), 1 )
-        OVER( order by extract(year from call_received), extract(month from call_received) ) as previous_lc
-
-    FROM
-        callers
-    GROUP BY
-        1, 2
-    ORDER BY
-        1, 2)
-
-
-SELECT
-    year,
-    month,
-    round(((lc-previous_lc)/previous_lc::decimal*100), 1)
-FROM
-    t
-```
-
-
-### Spotify - [Spotify Streaming History](https://datalemur.com/questions/spotify-streaming-history)
-
-The key here is to use UNION ALL instead of multiple CTEs
-
-```sql
-
-with t as(
-
-    (SELECT
-        user_id,
-        song_id,
-        count(song_id) as listens
-    FROM
-        songs_weekly
-    WHERE
-        extract(year from listen_time) <= 2022 and
-        extract(month from listen_time) <= 8 and
-        extract(day from listen_time) <= 4
-    GROUP BY
-        1, 2)
-
-    union all
-
-
-    (SELECT
-        user_id,
-        song_id,
-        sum(song_plays) as listens
-    FROM
-        songs_history
-    GROUP BY
-        1, 2)
-
-      )
-
-SELECT
-    user_id,
-    song_id ,
-    sum(listens) as song_plays
-FROM
-    t
-GROUP BY
-    1, 2
-ORDER BY
-    3 DESC
-
-```
-
-
-### Uber - [Second Ride Delay](https://datalemur.com/questions/2nd-ride-delay)
-
-This question gave me more problems than usual and taught me about a crucial difference between rank() and row_number() which is obvious in hindsight. My approach here is as follows: find the order of trips per user_id dependent on the date. Isolate those user_id who booked a first ride on the same day as their registration ('in the moment' users). Find the difference between the 2nd ride date and the registration date for these latter users.
-
-I kept getting the wrong answer initially until I finally realised I was using rank(), when I should have been using row_number().
-
-If two values are equal (in this case, we are looking at ride dates), rank() will of course return the same value for both. However, row_number() will not; it will instead return the next value. For example, rank() will  return 1 and 1 for the same ride date but row_number() will return 1 and 2.
-
-This realisation finally enabled me to get the solution
-
-
-```sql
-
-with ride_record as(
-
-    SELECT
-        u.user_id,
-        u.registration_date,
-        r.ride_date,
-        row_number() over (partition by u.user_id order by r.ride_date) as trip_no
-    FROM
-        users u
-    inner JOIN
-        rides r on u.user_id = r.user_id),
-
-    in_moment as(
-
-    select DISTINCT
-        ride_record.user_id
-    FROM
-        ride_record
-    WHERE
-        ride_record.registration_date = ride_record.ride_date)
-
-SELECT
-    ROUND(AVG(ride_date - registration_date),2) AS average_delay
-FROM
-    ride_record
-inner JOIN
-    in_moment on ride_record.user_id = in_moment.user_id
-WHERE
-    trip_no = 2
-
-```
-
-### CVS Health - [Pharmacy Analytics (Part 4)](https://datalemur.com/questions/top-drugs-sold)
-
-```sql
-
-with t as
-    (SELECT
-        manufacturer,
-        drug,
-        rank() over(partition by manufacturer order by sum(units_sold) DESC)
-    FROM
-        pharmacy_sales
-    GROUP BY
-        1, 2)
-SELECT
-    t.manufacturer,
-    t.drug as top_drugs
-FROM
-    t
-WHERE
-    rank <= 2
-ORDER BY
-    t.manufacturer asc
-
-```
-
-
-### JPMorgan Chase - [Card Launch Success](https://datalemur.com/questions/card-launch-success)
-
-```sql
-
-with t as(
-
-    SELECT
-        card_name,
-        issued_amount,
-        rank() over (partition by card_name order by min(issue_year), min(issue_month))
-    FROM
-        monthly_cards_issued
-    group by
-        1, 2
-    ORDER BY
-        2 DESC)
-
-SELECT
-  card_name,
-  issued_amount
-FROM
-    t
-WHERE
-    rank = 1
-
-```
-
-### Stitch Fix - [Repeat Purchases on Multiple Days](https://datalemur.com/questions/sql-repeat-purchases)
-
-The following is not the most elegant solution but I had to think about this problem for longer than usual and I eventually got the answer.
-
-The approach is to first find user_id and product_id combinations that occur over at least 2 different days. I accomplish this using COUNT(DISTINCT), GROUP BY and CONCAT. I use CONCAT because the purchase_date column has both the date and a timestamp, so simply using COUNT(DISTINCT) will not necessarily only capture different days as needed by the problem. It would also capture values for the same day, just at different times.
-
-I use COUNT(DISTINCT) to then get only those user_id-product_id combinations which occur on at least 2 different days. Then it is a simple matter of wrapping these steps in a CTE and using COUNT(DISTINCT user_id) to find the number of users who made purchases on at least 2 different days.
-
-``` sql
-with t as(             -- begin CTE
-    SELECT
-        user_id,
-        product_id,
-        count(DISTINCT -- begin COUNT
-            concat(    -- begin CONCAT
-            extract(day from purchase_date),
-            extract(month from purchase_date),
-            extract(year from purchase_date)
-                  )    -- end CONCAT
-             )         -- end COUNT
-    FROM
-        purchases
-    GROUP BY
-        1, 2
-    HAVING
-        count(DISTINCT -- begin COUNT
-            concat(    -- begin CONCAT
-            extract(day from purchase_date),
-            extract(month from purchase_date),
-            extract(year from purchase_date)
-                  )    -- end CONCAT
-             ) > 1     -- end COUNT
-         )             -- end CTE
-
-SELECT
-    count(distinct user_id) as repeat_purchasers
-FROM
-    t
-
-
-```
-
-
-### Etsy - [First Transaction](https://datalemur.com/questions/sql-first-transaction)
-
-``` sql
-
-with t as(
-
-select
-      user_id,
-      spend,
-      dense_rank() over (partition by user_id order by transaction_date) as rank
-from
-      user_transactions
-)
-
-select count(distinct t.user_id) as users
-from t
-where t.rank = 1 and t.spend >= 50
-
-```
-
-### Google - [Ad Campaign ROAS](https://datalemur.com/questions/ad-campaign-roas)
-
-``` sql
-
-select
-    advertiser_id, round(((sum(revenue)/sum(spend))::DECIMAL), 2) as ROAS
-from
-    ad_campaigns
-group by
-      1
-
-```
-
-### Amazon - [Average Review Ratings](https://datalemur.com/questions/sql-avg-review-ratings)
-
-``` sql
-
-select
-      extract(month from submit_date) as month,
-      product_id as product,
-      round(avg(stars), 2) as avg_stars
-from
-      reviews
-group by
-      1, 2
-order by
-      1, 2
-
-```
-
-### Spotify - [Top 5 Artists](https://datalemur.com/questions/top-fans-rank)
-
-``` sql
-
-with t as(
-
-    SELECT
-        artist_name,
-        dense_rank() over (order by count(artist_name) DESC) as artist_rank
-    FROM
-        artists a
-    inner JOIN
-        songs s on a.artist_id = s.artist_id
-    inner JOIN
-        global_song_rank g on s.song_id = g.song_id
-    WHERE
-        g.rank <= 10
-    GROUP BY
-        1)
-
-SELECT
-    artist_name,
-    artist_rank
-FROM
-    t
-WHERE
-    artist_rank <= 5
-
-```
-
-### Google - [Consulting Bench Time](https://datalemur.com/questions/consulting-bench-time)
-
-```  sql
-select
-      s.employee_id,
-      365 - sum(((c.end_date-c.start_date) + 1))
-from
-    staffing s
-inner join
-      consulting_engagements c on s.job_id = c.job_id
-where
-      s.is_consultant = 'true'
-group by
-      1
-```
-
-
-## "Hard" Difficulty
-
-### Facebook - [Active User Retention](https://datalemur.com/questions/user-retention)
-
-The following shows my first solution which has more parts to it than necessary. After it we can see my second solution, which pares down the unnecessary parts of the query and makes it cleaer.
-
-The approach here is as follows. I need to use a self-join on the user_actions table so that I can compare, for the same user_id, whether or not the user_id had transactions in consecutive months. The question defines "active users" as those who have a required interaction type in both July and June, so I want to look for these users only.
-
-I will join using a compound key where a.user_id is equal to b.user_id and also the event_date of table alias b occurs after the event date of table alias b.
-
-Next, I need to restrict this self join to only those cases where the difference between b.event_date and a.event_date is only 1 month, again because we are interested in July 2022 and June 2022 solely, and where the interaction type in both months is one of "sign-in", "like", or "comment".
-
-After this is done, I wrap this query in a CTE. From this CTE, I find the COUNT of DISTINCT user_id values of those users whose second interaction occurred in July 2022; by necessity, this means their first interaction occurred in June 2022 due to the way our CTE is set up. This is exactly what we're looking for.
-
-``` sql
-
--- First solutions
-
-with t as(
-
-    SELECT
-          a.user_id,
-          a.event_id as event_id_a,
-          a.event_date as a_date,
-          b.event_id as event_id_b,
-          b.event_date as b_date
-    FROM
-          user_actions a
-    JOIN
-          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
-    WHERE
-          (DATE_PART('year', b.event_date::timestamp) - DATE_PART('year', a.event_date::timestamp)) * 12 +
-          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
-          a.event_type in ('sign-in', 'like', 'comment') AND
-          b.event_type in ('sign-in', 'like', 'comment')
-         )
-SELECT
-    extract(month from t.b_date) as month,
-    count(distinct t.user_id) as monthly_active_users
-FROM
-    t
-WHERE
-     extract(month from t.b_date) = 7 AND
-     extract(year from t.b_date) = 2022
-GROUP BY
-    1
-
-```
-
-A less wordy, cleaner solution
-
-``` sql
-
-
-    SELECT
-          extract(month from b.event_date) as month,
-          count(distinct a.user_id) as monthly_active_users
-    FROM
-          user_actions a
-    JOIN
-          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
-    WHERE
-
-          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
-          a.event_type in ('sign-in', 'like', 'comment') AND
-          b.event_type in ('sign-in', 'like', 'comment') AND
-          extract(month from b.event_date) = 7 AND
-          extract(year from b.event_date) = 2022
-    GROUP BY
-        1
-
-```
-
-### Wayfair - [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
-
-``` sql
-
-with table1 as(select
-      product_id,
-      extract(year from transaction_date) as year,
-      sum(spend) as total_spend
-FROM
-      user_transactions
-group by
-      1, 2
-ORDER BY
-      1, 2)
-
-SELECT
-      a.year,
-      a.product_id,
-      a.total_spend as curr_year_spend,
-      b.total_spend as prev_year_spend,
-      round(((a.total_spend - b.total_spend)/(b.total_spend))*100.0, 2)
-FROM
-      table1 a
-LEFT JOIN
-      table1 b on a.product_id = b.product_id AND
-                  a.year= b.year + 1
-
-```
 
 
 # LeetCode
 
+
+## 'Hard' Difficulty
+
+
+### [262. Trips and Users](https://leetcode.com/problems/trips-and-users/description/?envType=problem-list-v2&envId=database&difficulty=HARD)
+
+
+The thing to be careful with in this query is understanding that the Users table needs to be joined to the Trips table twice,
+once on Client ID and once on Drivers ID. This is necessary to get the correct Status (Banned vs Unbanned) for both Clients
+and Drivers. After that, it is a simple procedure of grouping by Day and finding the number Cancelled trips as a proportion
+of total trips
+
+```sql
+
+# Write your MySQL query statement below
+with cte as(
+    select
+        t.id as trip_id,
+        t.client_id,
+        u1.banned as client_status,
+        t.driver_id,
+        u2.banned as driver_status,
+        t.status as trip_status,
+        t.request_at,
+        case when t.status in ('cancelled_by_driver', 'cancelled_by_client') then 1 else 0 end as binary_status
+    from
+        trips t
+    left join
+        users u1 on t.client_id = u1.users_id
+    left join
+        users u2 on t.driver_id = u2.users_id
+    where
+        u1.banned != 'Yes'
+        and u2.banned != 'Yes'
+)
+
+select
+    request_at as Day,
+    round(sum(binary_status) / count(request_at), 2) as 'Cancellation Rate'
+from
+    cte
+group by 1
+order by 1
+
+
+```
+
+
+### [185. Department Top Three Salaries](https://leetcode.com/problems/department-top-three-salaries/description/?envType=problem-list-v2&envId=database&difficulty=HARD)
+
+Approach: Join the Employee table to the Department table using the Primary-Foreign Key combination. Because the question
+asks for the top 3 *unique* salaries, we must be careful to use DENSE_RANK() instead of RANK() or ROW_NUMBER(), as the former
+will assign the same value to equal salaries when we partition by department
+
+```sql
+
+with cte as(
+    select
+        e.name as employee_name,
+        e.salary as employee_salary,
+        d.name as department_name,
+        dense_rank() over (partition by d.name order by e.salary DESC) as ranked
+    from
+        Employee e
+    left join
+        Department d on e.departmentId = d.id
+)
+
+select
+    department_name as Department,
+    employee_name as Employee,
+    employee_salary as Salary
+from
+    cte
+where
+    ranked <= 3
+
+
+
+```
+
+
+
+
+
 ## 'Medium' Difficulty
 
-### [1341. Movie Rating]('https://leetcode.com/problems/movie-rating/description/')
+### [1341. Movie Rating](https://leetcode.com/problems/movie-rating/description/)
 
 Approach: Find the user with the most reviews using one query. Call this t1. Find the movie with the highest average rating in February 2020. Call this t2. These queries are simple enough.
 
@@ -944,3 +576,469 @@ where
 
 
 ```
+
+
+
+
+
+
+
+
+
+
+# DataLemur
+
+## "Medium" Difficulty
+
+### Google - [Odd and Even Measurements](https://datalemur.com/questions/odd-even-measurements)
+
+
+The key here is to use the ROW_NUMBER() window function and to use day only (using EXTRACT()) in the PARTITION BY clause while using the entire datetime value (named measurement_time) in the ORDER BY clause
+
+```sql
+
+with t as(
+
+    SELECT
+        measurement_id,
+        measurement_value,
+        measurement_time,
+        row_number() over (partition by extract(day from measurement_time) order by measurement_time)
+    FROM
+        measurements)
+SELECT
+    measurement_time::date as measurement_day,
+    sum(case WHEN row_number % 2 != 0 then measurement_value else 0 end) as odd_sum,
+    sum(case when row_number % 2 = 0 then measurement_value else 0 end) as even_sum
+FROM
+    t
+GROUP BY
+    1
+ORDER BY
+    1
+
+```
+
+
+### UnitedHealth - [Patient Support Analysis (Part 4)](https://datalemur.com/questions/long-calls-growth)
+
+The key to solving this problem is to use the LAG() window function to compare the number of long calls in one month to that of the previous month and to cast the percentage calculation as a decimal to be able to get negative percentages
+
+```sql
+
+with t as(
+
+    SELECT
+        extract(year from call_received) as year,
+        extract(month from call_received) as month,
+        sum(case when call_duration_secs > 300 then 1 else 0 end) as lc,
+        lag( sum(case when call_duration_secs > 300 then 1 else 0 end), 1 )
+        OVER( order by extract(year from call_received), extract(month from call_received) ) as previous_lc
+
+    FROM
+        callers
+    GROUP BY
+        1, 2
+    ORDER BY
+        1, 2)
+
+
+SELECT
+    year,
+    month,
+    round(((lc-previous_lc)/previous_lc::decimal*100), 1)
+FROM
+    t
+```
+
+
+### Spotify - [Spotify Streaming History](https://datalemur.com/questions/spotify-streaming-history)
+
+The key here is to use UNION ALL instead of multiple CTEs
+
+```sql
+
+with t as(
+
+    (SELECT
+        user_id,
+        song_id,
+        count(song_id) as listens
+    FROM
+        songs_weekly
+    WHERE
+        extract(year from listen_time) <= 2022 and
+        extract(month from listen_time) <= 8 and
+        extract(day from listen_time) <= 4
+    GROUP BY
+        1, 2)
+
+    union all
+
+
+    (SELECT
+        user_id,
+        song_id,
+        sum(song_plays) as listens
+    FROM
+        songs_history
+    GROUP BY
+        1, 2)
+
+      )
+
+SELECT
+    user_id,
+    song_id ,
+    sum(listens) as song_plays
+FROM
+    t
+GROUP BY
+    1, 2
+ORDER BY
+    3 DESC
+
+```
+
+
+### Uber - [Second Ride Delay](https://datalemur.com/questions/2nd-ride-delay)
+
+This question gave me more problems than usual and taught me about a crucial difference between rank() and row_number() which is obvious in hindsight. My approach here is as follows: find the order of trips per user_id dependent on the date. Isolate those user_id who booked a first ride on the same day as their registration ('in the moment' users). Find the difference between the 2nd ride date and the registration date for these latter users.
+
+I kept getting the wrong answer initially until I finally realised I was using rank(), when I should have been using row_number().
+
+If two values are equal (in this case, we are looking at ride dates), rank() will of course return the same value for both. However, row_number() will not; it will instead return the next value. For example, rank() will  return 1 and 1 for the same ride date but row_number() will return 1 and 2.
+
+This realisation finally enabled me to get the solution
+
+
+```sql
+
+with ride_record as(
+
+    SELECT
+        u.user_id,
+        u.registration_date,
+        r.ride_date,
+        row_number() over (partition by u.user_id order by r.ride_date) as trip_no
+    FROM
+        users u
+    inner JOIN
+        rides r on u.user_id = r.user_id),
+
+    in_moment as(
+
+    select DISTINCT
+        ride_record.user_id
+    FROM
+        ride_record
+    WHERE
+        ride_record.registration_date = ride_record.ride_date)
+
+SELECT
+    ROUND(AVG(ride_date - registration_date),2) AS average_delay
+FROM
+    ride_record
+inner JOIN
+    in_moment on ride_record.user_id = in_moment.user_id
+WHERE
+    trip_no = 2
+
+```
+
+### CVS Health - [Pharmacy Analytics (Part 4)](https://datalemur.com/questions/top-drugs-sold)
+
+```sql
+
+with t as
+    (SELECT
+        manufacturer,
+        drug,
+        rank() over(partition by manufacturer order by sum(units_sold) DESC)
+    FROM
+        pharmacy_sales
+    GROUP BY
+        1, 2)
+SELECT
+    t.manufacturer,
+    t.drug as top_drugs
+FROM
+    t
+WHERE
+    rank <= 2
+ORDER BY
+    t.manufacturer asc
+
+```
+
+
+### JPMorgan Chase - [Card Launch Success](https://datalemur.com/questions/card-launch-success)
+
+```sql
+
+with t as(
+
+    SELECT
+        card_name,
+        issued_amount,
+        rank() over (partition by card_name order by min(issue_year), min(issue_month))
+    FROM
+        monthly_cards_issued
+    group by
+        1, 2
+    ORDER BY
+        2 DESC)
+
+SELECT
+  card_name,
+  issued_amount
+FROM
+    t
+WHERE
+    rank = 1
+
+```
+
+### Stitch Fix - [Repeat Purchases on Multiple Days](https://datalemur.com/questions/sql-repeat-purchases)
+
+The following is not the most elegant solution but I had to think about this problem for longer than usual and I eventually got the answer.
+
+The approach is to first find user_id and product_id combinations that occur over at least 2 different days. I accomplish this using COUNT(DISTINCT), GROUP BY and CONCAT. I use CONCAT because the purchase_date column has both the date and a timestamp, so simply using COUNT(DISTINCT) will not necessarily only capture different days as needed by the problem. It would also capture values for the same day, just at different times.
+
+I use COUNT(DISTINCT) to then get only those user_id-product_id combinations which occur on at least 2 different days. Then it is a simple matter of wrapping these steps in a CTE and using COUNT(DISTINCT user_id) to find the number of users who made purchases on at least 2 different days.
+
+``` sql
+with t as(             -- begin CTE
+    SELECT
+        user_id,
+        product_id,
+        count(DISTINCT -- begin COUNT
+            concat(    -- begin CONCAT
+            extract(day from purchase_date),
+            extract(month from purchase_date),
+            extract(year from purchase_date)
+                  )    -- end CONCAT
+             )         -- end COUNT
+    FROM
+        purchases
+    GROUP BY
+        1, 2
+    HAVING
+        count(DISTINCT -- begin COUNT
+            concat(    -- begin CONCAT
+            extract(day from purchase_date),
+            extract(month from purchase_date),
+            extract(year from purchase_date)
+                  )    -- end CONCAT
+             ) > 1     -- end COUNT
+         )             -- end CTE
+
+SELECT
+    count(distinct user_id) as repeat_purchasers
+FROM
+    t
+
+
+```
+
+
+### Etsy - [First Transaction](https://datalemur.com/questions/sql-first-transaction)
+
+``` sql
+
+with t as(
+
+select
+      user_id,
+      spend,
+      dense_rank() over (partition by user_id order by transaction_date) as rank
+from
+      user_transactions
+)
+
+select count(distinct t.user_id) as users
+from t
+where t.rank = 1 and t.spend >= 50
+
+```
+
+### Google - [Ad Campaign ROAS](https://datalemur.com/questions/ad-campaign-roas)
+
+``` sql
+
+select
+    advertiser_id, round(((sum(revenue)/sum(spend))::DECIMAL), 2) as ROAS
+from
+    ad_campaigns
+group by
+      1
+
+```
+
+### Amazon - [Average Review Ratings](https://datalemur.com/questions/sql-avg-review-ratings)
+
+``` sql
+
+select
+      extract(month from submit_date) as month,
+      product_id as product,
+      round(avg(stars), 2) as avg_stars
+from
+      reviews
+group by
+      1, 2
+order by
+      1, 2
+
+```
+
+### Spotify - [Top 5 Artists](https://datalemur.com/questions/top-fans-rank)
+
+``` sql
+
+with t as(
+
+    SELECT
+        artist_name,
+        dense_rank() over (order by count(artist_name) DESC) as artist_rank
+    FROM
+        artists a
+    inner JOIN
+        songs s on a.artist_id = s.artist_id
+    inner JOIN
+        global_song_rank g on s.song_id = g.song_id
+    WHERE
+        g.rank <= 10
+    GROUP BY
+        1)
+
+SELECT
+    artist_name,
+    artist_rank
+FROM
+    t
+WHERE
+    artist_rank <= 5
+
+```
+
+### Google - [Consulting Bench Time](https://datalemur.com/questions/consulting-bench-time)
+
+```  sql
+select
+      s.employee_id,
+      365 - sum(((c.end_date-c.start_date) + 1))
+from
+    staffing s
+inner join
+      consulting_engagements c on s.job_id = c.job_id
+where
+      s.is_consultant = 'true'
+group by
+      1
+```
+
+
+## "Hard" Difficulty
+
+### Facebook - [Active User Retention](https://datalemur.com/questions/user-retention)
+
+The following shows my first solution which has more parts to it than necessary. After it we can see my second solution, which pares down the unnecessary parts of the query and makes it cleaer.
+
+The approach here is as follows. I need to use a self-join on the user_actions table so that I can compare, for the same user_id, whether or not the user_id had transactions in consecutive months. The question defines "active users" as those who have a required interaction type in both July and June, so I want to look for these users only.
+
+I will join using a compound key where a.user_id is equal to b.user_id and also the event_date of table alias b occurs after the event date of table alias b.
+
+Next, I need to restrict this self join to only those cases where the difference between b.event_date and a.event_date is only 1 month, again because we are interested in July 2022 and June 2022 solely, and where the interaction type in both months is one of "sign-in", "like", or "comment".
+
+After this is done, I wrap this query in a CTE. From this CTE, I find the COUNT of DISTINCT user_id values of those users whose second interaction occurred in July 2022; by necessity, this means their first interaction occurred in June 2022 due to the way our CTE is set up. This is exactly what we're looking for.
+
+``` sql
+
+-- First solutions
+
+with t as(
+
+    SELECT
+          a.user_id,
+          a.event_id as event_id_a,
+          a.event_date as a_date,
+          b.event_id as event_id_b,
+          b.event_date as b_date
+    FROM
+          user_actions a
+    JOIN
+          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
+    WHERE
+          (DATE_PART('year', b.event_date::timestamp) - DATE_PART('year', a.event_date::timestamp)) * 12 +
+          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
+          a.event_type in ('sign-in', 'like', 'comment') AND
+          b.event_type in ('sign-in', 'like', 'comment')
+         )
+SELECT
+    extract(month from t.b_date) as month,
+    count(distinct t.user_id) as monthly_active_users
+FROM
+    t
+WHERE
+     extract(month from t.b_date) = 7 AND
+     extract(year from t.b_date) = 2022
+GROUP BY
+    1
+
+```
+
+A less wordy, cleaner solution
+
+``` sql
+
+
+    SELECT
+          extract(month from b.event_date) as month,
+          count(distinct a.user_id) as monthly_active_users
+    FROM
+          user_actions a
+    JOIN
+          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
+    WHERE
+
+          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
+          a.event_type in ('sign-in', 'like', 'comment') AND
+          b.event_type in ('sign-in', 'like', 'comment') AND
+          extract(month from b.event_date) = 7 AND
+          extract(year from b.event_date) = 2022
+    GROUP BY
+        1
+
+```
+
+### Wayfair - [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
+
+``` sql
+
+with table1 as(select
+      product_id,
+      extract(year from transaction_date) as year,
+      sum(spend) as total_spend
+FROM
+      user_transactions
+group by
+      1, 2
+ORDER BY
+      1, 2)
+
+SELECT
+      a.year,
+      a.product_id,
+      a.total_spend as curr_year_spend,
+      b.total_spend as prev_year_spend,
+      round(((a.total_spend - b.total_spend)/(b.total_spend))*100.0, 2)
+FROM
+      table1 a
+LEFT JOIN
+      table1 b on a.product_id = b.product_id AND
+                  a.year= b.year + 1
+
+```
+
+
