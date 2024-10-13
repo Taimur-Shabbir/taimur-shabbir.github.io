@@ -26,6 +26,86 @@ excerpt: "A live document where I demonstrate my solutions to Medium and Hard-ra
 ## 'Hard' Difficulty
 
 
+### [601. Human Traffic of Stadium](https://leetcode.com/problems/human-traffic-of-stadium/description/?envType=problem-list-v2&envId=database&difficulty=HARD)
+
+This problem can be tricky if you let it lead you down the wrong path. For example, it's easy to look at this and
+immediately think you need to use window functions. Unfortunately, you'll have to use multiple window functions on successive
+CTEs, each derived from the one before, and I don't think it would be an elegant solution.
+
+Instead, we can use what I like to call the "old reliable" - self-joins. Let's self-join the table to itself twice so that
+we get 3 successive IDs in a single row. From there we simply filter for rows where the number of People is >= 100 in a given
+row. This will get us all required IDs, but we still need to get them in the correct format.
+
+In Spark and Databricks SQL, you can use UNPIVOT() clause. But here I am using MySQL which does not have this functionality,
+so I will use an alternative method: UNION. This does require a scan of the whole table which each execution of UNION, and so
+it isn't the fastest solution when datasets get large, but it will get the job done here.
+
+After getting all required IDs, we can simply INNER JOIN to the Stadium table to get the desired results
+
+
+```sql
+
+# Write your MySQL query statement below
+
+with self_joined_stadium as(
+
+    select
+        a.id as a_id,
+        a.visit_date,
+        a.people as a_people,
+        b.id as b_id,
+        -- b.visit_date,
+        b.people as b_people,
+        c.id as c_id,
+        c.people as c_people
+    from
+        Stadium a
+    left join
+        Stadium b on a.id + 1 = b.id
+    left join
+        Stadium c on b.id + 1 = c.id
+    order by a.id, b.id, c.id
+
+),
+
+filtered as(
+
+    select
+        *
+    from
+        self_joined_stadium 
+    where
+        a_people >= 100
+        and b_people >= 100
+        and c_people >= 100
+),
+
+required_id as(
+
+    select a_id from filtered
+
+    union
+
+    select b_id from filtered
+
+    union
+
+    select c_id from filtered
+
+)
+
+select
+    s.*
+from
+    Stadium s
+inner join
+    required_id ri on s.id = ri.a_id
+
+
+
+```
+
+
 ### [262. Trips and Users](https://leetcode.com/problems/trips-and-users/description/?envType=problem-list-v2&envId=database&difficulty=HARD)
 
 
