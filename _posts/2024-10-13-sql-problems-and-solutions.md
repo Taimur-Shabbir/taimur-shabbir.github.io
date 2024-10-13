@@ -668,6 +668,109 @@ where
 
 # DataLemur
 
+## "Hard" Difficulty
+
+### Facebook - [Active User Retention](https://datalemur.com/questions/user-retention)
+
+The following shows my first solution which has more parts to it than necessary. After it we can see my second solution, which pares down the unnecessary parts of the query and makes it cleaer.
+
+The approach here is as follows. I need to use a self-join on the user_actions table so that I can compare, for the same user_id, whether or not the user_id had transactions in consecutive months. The question defines "active users" as those who have a required interaction type in both July and June, so I want to look for these users only.
+
+I will join using a compound key where a.user_id is equal to b.user_id and also the event_date of table alias b occurs after the event date of table alias b.
+
+Next, I need to restrict this self join to only those cases where the difference between b.event_date and a.event_date is only 1 month, again because we are interested in July 2022 and June 2022 solely, and where the interaction type in both months is one of "sign-in", "like", or "comment".
+
+After this is done, I wrap this query in a CTE. From this CTE, I find the COUNT of DISTINCT user_id values of those users whose second interaction occurred in July 2022; by necessity, this means their first interaction occurred in June 2022 due to the way our CTE is set up. This is exactly what we're looking for.
+
+``` sql
+
+-- First solutions
+
+with t as(
+
+    SELECT
+          a.user_id,
+          a.event_id as event_id_a,
+          a.event_date as a_date,
+          b.event_id as event_id_b,
+          b.event_date as b_date
+    FROM
+          user_actions a
+    JOIN
+          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
+    WHERE
+          (DATE_PART('year', b.event_date::timestamp) - DATE_PART('year', a.event_date::timestamp)) * 12 +
+          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
+          a.event_type in ('sign-in', 'like', 'comment') AND
+          b.event_type in ('sign-in', 'like', 'comment')
+         )
+SELECT
+    extract(month from t.b_date) as month,
+    count(distinct t.user_id) as monthly_active_users
+FROM
+    t
+WHERE
+     extract(month from t.b_date) = 7 AND
+     extract(year from t.b_date) = 2022
+GROUP BY
+    1
+
+```
+
+A less wordy, cleaner solution
+
+``` sql
+
+
+    SELECT
+          extract(month from b.event_date) as month,
+          count(distinct a.user_id) as monthly_active_users
+    FROM
+          user_actions a
+    JOIN
+          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
+    WHERE
+
+          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
+          a.event_type in ('sign-in', 'like', 'comment') AND
+          b.event_type in ('sign-in', 'like', 'comment') AND
+          extract(month from b.event_date) = 7 AND
+          extract(year from b.event_date) = 2022
+    GROUP BY
+        1
+
+```
+
+### Wayfair - [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
+
+``` sql
+
+with table1 as(select
+      product_id,
+      extract(year from transaction_date) as year,
+      sum(spend) as total_spend
+FROM
+      user_transactions
+group by
+      1, 2
+ORDER BY
+      1, 2)
+
+SELECT
+      a.year,
+      a.product_id,
+      a.total_spend as curr_year_spend,
+      b.total_spend as prev_year_spend,
+      round(((a.total_spend - b.total_spend)/(b.total_spend))*100.0, 2)
+FROM
+      table1 a
+LEFT JOIN
+      table1 b on a.product_id = b.product_id AND
+                  a.year= b.year + 1
+
+```
+
+
 ## "Medium" Difficulty
 
 ### Google - [Odd and Even Measurements](https://datalemur.com/questions/odd-even-measurements)
@@ -1019,106 +1122,5 @@ group by
 ```
 
 
-## "Hard" Difficulty
-
-### Facebook - [Active User Retention](https://datalemur.com/questions/user-retention)
-
-The following shows my first solution which has more parts to it than necessary. After it we can see my second solution, which pares down the unnecessary parts of the query and makes it cleaer.
-
-The approach here is as follows. I need to use a self-join on the user_actions table so that I can compare, for the same user_id, whether or not the user_id had transactions in consecutive months. The question defines "active users" as those who have a required interaction type in both July and June, so I want to look for these users only.
-
-I will join using a compound key where a.user_id is equal to b.user_id and also the event_date of table alias b occurs after the event date of table alias b.
-
-Next, I need to restrict this self join to only those cases where the difference between b.event_date and a.event_date is only 1 month, again because we are interested in July 2022 and June 2022 solely, and where the interaction type in both months is one of "sign-in", "like", or "comment".
-
-After this is done, I wrap this query in a CTE. From this CTE, I find the COUNT of DISTINCT user_id values of those users whose second interaction occurred in July 2022; by necessity, this means their first interaction occurred in June 2022 due to the way our CTE is set up. This is exactly what we're looking for.
-
-``` sql
-
--- First solutions
-
-with t as(
-
-    SELECT
-          a.user_id,
-          a.event_id as event_id_a,
-          a.event_date as a_date,
-          b.event_id as event_id_b,
-          b.event_date as b_date
-    FROM
-          user_actions a
-    JOIN
-          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
-    WHERE
-          (DATE_PART('year', b.event_date::timestamp) - DATE_PART('year', a.event_date::timestamp)) * 12 +
-          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
-          a.event_type in ('sign-in', 'like', 'comment') AND
-          b.event_type in ('sign-in', 'like', 'comment')
-         )
-SELECT
-    extract(month from t.b_date) as month,
-    count(distinct t.user_id) as monthly_active_users
-FROM
-    t
-WHERE
-     extract(month from t.b_date) = 7 AND
-     extract(year from t.b_date) = 2022
-GROUP BY
-    1
-
-```
-
-A less wordy, cleaner solution
-
-``` sql
-
-
-    SELECT
-          extract(month from b.event_date) as month,
-          count(distinct a.user_id) as monthly_active_users
-    FROM
-          user_actions a
-    JOIN
-          user_actions b on a.user_id = b.user_id AND b.event_date > a.event_date
-    WHERE
-
-          (DATE_PART('month', b.event_date::timestamp) - DATE_PART('month', a.event_date::timestamp)) = 1 AND
-          a.event_type in ('sign-in', 'like', 'comment') AND
-          b.event_type in ('sign-in', 'like', 'comment') AND
-          extract(month from b.event_date) = 7 AND
-          extract(year from b.event_date) = 2022
-    GROUP BY
-        1
-
-```
-
-### Wayfair - [Y-on-Y Growth Rate](https://datalemur.com/questions/yoy-growth-rate)
-
-``` sql
-
-with table1 as(select
-      product_id,
-      extract(year from transaction_date) as year,
-      sum(spend) as total_spend
-FROM
-      user_transactions
-group by
-      1, 2
-ORDER BY
-      1, 2)
-
-SELECT
-      a.year,
-      a.product_id,
-      a.total_spend as curr_year_spend,
-      b.total_spend as prev_year_spend,
-      round(((a.total_spend - b.total_spend)/(b.total_spend))*100.0, 2)
-FROM
-      table1 a
-LEFT JOIN
-      table1 b on a.product_id = b.product_id AND
-                  a.year= b.year + 1
-
-```
 
 
